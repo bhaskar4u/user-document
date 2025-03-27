@@ -61,7 +61,7 @@ Ingestion System (Real-time processing & tracking)
 Docker Deployment (Containerized services for scalability)
 
 
-## Microservices Structure
+## 🔹 Microservices Structure
 Service Name	Description
 api-gateway	Handles authentication, routing, and user-facing API endpoints
 user-service	Manages user registration, authentication, and profiles
@@ -85,29 +85,24 @@ RabbitMQ
 ## 📌 Installation
 Clone the repository and install dependencies:
 
-sh
-Copy
-Edit
-git clone https://github.com/your-repo/nestjs-microservices.git
-cd nestjs-microservices
+git clone https://github.com/bhaskar4u/user-document.git
+cd user-document
 npm install
 
 
 ## ⚙️ Running the Application
 🔹 Start Services Locally
-sh
-Copy
-Edit
-# Start API Gateway
+
+### Start API Gateway
 npm run start:dev  api-gateway
 
-# Start Auth Service
+### Start Auth Service
 npm run start:dev auth
 
-# Start Document Service
+### Start Document Service
 npm run start:dev documents
 
-# Start Ingestion Service
+### Start Ingestion Service
 npm run start:dev ingestion
 
 
@@ -162,9 +157,9 @@ PostgreSQL: https://www.postgresql.org/docs/
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
 
 ## 👨‍💻 Contributors
-👤 [Your Name]
-📧 Email: [your-email@example.com]
-🔗 GitHub: https://github.com/your-profile
+👤 [Bhaskar Kumar]
+📧 Email: [bhaskarsahni80@gmail.com]
+🔗 GitHub: https://github.com/bhaskar4u
 
 ## License
 
