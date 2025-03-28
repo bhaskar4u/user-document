@@ -135,6 +135,7 @@ npm run test:cov
 
 
 ## 🛠 API Endpoints
+
 🔹 Authentication
 📌 Register a New User
 
@@ -151,6 +152,100 @@ POST /users/register
 ✅ Response:
 
 "user created successfully"
+
+📌 Login & Get JWT Token
+
+POST /users/login
+
+✅ Request:
+
+{
+  "email": "bhaskar@example.com",
+  "password": "123456"
+}
+
+✅ Response:
+
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+
+📌 Get User Profile (Requires Authentication)
+GET /users/profile
+
+✅ Request (Authorization Header Required):
+
+{
+  "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+
+✅ Response:
+
+{
+  "id": 1,
+  "username": "bhaskar",
+  "email": "bhaskar@example.com"
+}
+
+
+🔹 Documents
+📌 Upload a Document (Requires Authentication)
+
+POST /documents/upload
+
+✅ Request (Authorization Header Required):
+
+(Attach the file in the request)
+
+✅ Response:
+
+{
+  "success": true,
+  "documentId": 6
+}
+
+🔹 Ingestion
+📌 Start Document Ingestion (Requires Authentication)
+
+POST /ingestion/start
+
+✅ Request (Authorization Header Required):
+
+{
+  "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+
+✅ Body:
+
+{
+  "documentId": 1
+}
+
+✅ Response:
+
+{
+  "message": "Ingestion started",
+  "documentId": 1,
+  "status": "Processing"
+}
+
+📌 Track Ingestion Status in Real-Time (Requires Authentication)
+
+GET /ingestion/status/:documentId
+
+✅ Request (Authorization Header Required):
+
+{
+  "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+
+✅ Response:
+
+{
+  "documentId": 1,
+  "status": "Completed"
+}
+
 
 ## 🛠 Tech Stack
 Technology	Purpose
