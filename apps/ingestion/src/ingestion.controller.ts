@@ -1,12 +1,7 @@
 import { IngestionService } from './ingestion.service';
-import { Controller, Post, Body, Inject, UseGuards, Request, Get, Param,BadRequestException } from '@nestjs/common';
-import { ClientProxy, MessagePattern, Payload } from '@nestjs/microservices';
+import { Controller, Inject } from '@nestjs/common';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 
-
-enum DocumentStatus {
-  PROCESSING = 'Processing',
-  COMPLETED = 'Completed',
-}
 
 @Controller('ingestion')
 export class IngestionController {

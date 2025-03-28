@@ -1,8 +1,8 @@
 {
   "name": "user-document",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "nestjs microservices mono repo app",
+  "author": "bhaskar kumar",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
@@ -28,7 +28,9 @@
     "@nestjs/mongoose": "^11.0.2",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/platform-socket.io": "^11.0.12",
     "@nestjs/typeorm": "^11.0.0",
+    "@nestjs/websockets": "^11.0.12",
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.5",
     "bcrypt": "^5.1.1",

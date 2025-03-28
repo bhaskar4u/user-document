@@ -5,7 +5,6 @@ import { Documents } from './documents.entity';
 import {RmqService} from '@app/common'
 import {DocumentController} from './documents.controller'
 import {DocumentsService} from './documents.service'
-import {UserService} from '../../auth/src/user.service'
 
 
 

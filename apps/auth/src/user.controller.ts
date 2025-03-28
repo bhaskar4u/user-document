@@ -17,7 +17,9 @@ export class UserController {
   }
 
   @MessagePattern('user.profile')
-  async getUserProfile(@Payload() { userId }: { userId: string }) {
+  async getUserProfile(@Payload() { userId }: { userId: number }) {
+    console.log("userId");
+    
     return this.userService.getUserProfile(userId);
   }
 }

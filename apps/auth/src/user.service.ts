@@ -3,8 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { User ,UserRole} from './user.entity';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { User } from './user.entity';
+import { ConfigService } from '@nestjs/config';
 
 
 @Injectable()
@@ -42,8 +42,8 @@ export class UserService {
   }
 
 
-  async getUserProfile(userId: string) {
-    const user = await this.userRepository.findOne({ where: { } });
+  async getUserProfile(userId: number) {
+    const user = await this.userRepository.findOne({ where: {id:userId } });
     if (!user) throw new Error('User not found');
     return { id: user.id, username: user.username, email: user.email };
   }

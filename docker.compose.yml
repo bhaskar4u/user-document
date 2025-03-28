@@ -64,7 +64,7 @@ services:
       target: development
     command: npm run start:dev auth
     env_file:
-      - ./apps/auth/.env
+      - ./apps/.env
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
@@ -87,7 +87,7 @@ services:
       target: development
     command: npm run start:dev documents
     env_file:
-      - ./apps/documents/.env
+      - ./apps/.env
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
@@ -110,7 +110,7 @@ services:
       target: development
     command: npm run start:dev ingestion
     env_file:
-      - ./apps/ingestion/.env
+      - ./apps/.env
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
@@ -133,7 +133,7 @@ services:
       target: development
     command: npm run start:dev api-gateway
     env_file:
-      - ./apps/api-gateway/.env
+      - ./apps/.env
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules

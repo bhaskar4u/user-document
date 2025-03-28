@@ -81,6 +81,8 @@ PostgreSQL
 
 RabbitMQ
 
+Websocket
+
 
 ## 📌 Installation
 Clone the repository and install dependencies:

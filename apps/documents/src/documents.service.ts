@@ -1,9 +1,8 @@
-import { Injectable, OnModuleInit,Inject } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Documents } from './documents.entity';
-import { ClientProxy, MessagePattern } from '@nestjs/microservices';
-import {RmqService} from '@app/common'
+import { MessagePattern } from '@nestjs/microservices';
 
 @Injectable()
 export class DocumentsService implements OnModuleInit {
