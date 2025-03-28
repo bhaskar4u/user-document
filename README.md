@@ -15,9 +15,34 @@
 
 ## Project setup
 
-```bash
-$ npm install
-```
+## 📌 Installation
+Clone the repository and install dependencies:
+
+git clone https://github.com/bhaskar4u/user-document.git
+
+cd user-document
+
+npm install
+
+
+## ⚙️ Running the Application
+🔹 Start Services Locally
+
+### Start API Gateway
+npm run start:dev  api-gateway
+
+### Start Auth Service
+npm run start:dev auth
+
+### Start Document Service
+npm run start:dev documents
+
+### Start Ingestion Service
+npm run start:dev ingestion
+
+
+## 🔹 Run with Docker Compose
+docker compose up -d
 
 ## Compile and run the project
 
@@ -31,6 +56,28 @@ $ npm run start:dev
 # production mode
 $ npm run start:prod
 ```
+
+## Run All Tests
+
+npm run test
+## Run Individual Service Tests
+Run tests for specific microservices in watch mode for continuous testing:
+
+### Auth Service
+npm run test:watch auth
+
+### Document Service
+npm run test:watch documents
+
+### Ingestion Service
+npm run test:watch ingestion
+
+### API Gateway
+npm run test:watch api-gateway
+
+
+# Test coverage
+npm run test:cov
 
 ## Run tests
 
@@ -82,58 +129,6 @@ PostgreSQL
 RabbitMQ
 
 Websocket
-
-
-## 📌 Installation
-Clone the repository and install dependencies:
-
-git clone https://github.com/bhaskar4u/user-document.git
-
-cd user-document
-
-npm install
-
-
-## ⚙️ Running the Application
-🔹 Start Services Locally
-
-### Start API Gateway
-npm run start:dev  api-gateway
-
-### Start Auth Service
-npm run start:dev auth
-
-### Start Document Service
-npm run start:dev documents
-
-### Start Ingestion Service
-npm run start:dev ingestion
-
-
-## 🔹 Run with Docker Compose
-docker compose up -d
-
-## Run All Tests
-
-npm run test
-## Run Individual Service Tests
-Run tests for specific microservices in watch mode for continuous testing:
-
-### Auth Service
-npm run test:watch auth
-
-### Document Service
-npm run test:watch documents
-
-### Ingestion Service
-npm run test:watch ingestion
-
-### API Gateway
-npm run test:watch api-gateway
-
-
-# Test coverage
-npm run test:cov
 
 
 ## 🛠 API Endpoints
