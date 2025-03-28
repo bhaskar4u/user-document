@@ -137,8 +137,11 @@ npm run test:cov
 ## 🛠 API Endpoints
 🔹 Authentication
 📌 Register a New User
+
 POST /users/register
+
 ✅ Request:
+
 {
   "username": "yourname",
   "email": "example@example.com",
@@ -146,6 +149,7 @@ POST /users/register
 }
 
 ✅ Response:
+
 "user created successfully"
 
 ## 🛠 Tech Stack
