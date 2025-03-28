@@ -136,86 +136,17 @@ npm run test:cov
 
 ## 🛠 API Endpoints
 🔹 Authentication
-POST /users/register – Register a new user
+📌 Register a New User
+POST /users/register
 ✅ Request:
-
 {
   "username": "yourname",
   "email": "example@example.com",
   "password": "123456"
 }
-✅ Response:"user created successfully"
-
-POST /users/login – Authenticate and receive a JWT token
-✅ Request:
-
-{
-  "email": "bhaskar@example.com",
-  "password": "123456"
-}
-✅ Response:
-
-{
-  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-GET /users/profile – Get the authenticated user's profile
-✅ Request (Authorization Header Required):
-{
-  "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-✅ Response:
-
-{
-  "id": 1,
-  "username": "bhaskar",
-  "email": "bhaskar@example.com"
-}
-
-🔹 Documents
-POST /documents/upload – Upload a document (Authenticated users)
-✅ Request (Authorization Header Required):
-
-{
-  "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-(Attach the file in the request)
 
 ✅ Response:
-
-{
-  "success": true,
-  "documentId": 6
-}
-🔹 Ingestion
-POST /ingestion/start – Start document ingestion
-✅ Request (Authorization Header Required):
-
-{
-  "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-✅ Body:
-{
-  "documentId": 1
-}
-✅ Response:
-
-{
-  "message": "Ingestion started",
-  "documentId": 1,
-  "status": "Processing"
-}
-GET /ingestion/status/:documentId – Track ingestion status in real-time
-✅ Request (Authorization Header Required):
-
-{
-  "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-✅ Response:
-
-{
-  "documentId": 1,
-  "status": "Completed"
-}
+"user created successfully"
 
 ## 🛠 Tech Stack
 Technology	Purpose
