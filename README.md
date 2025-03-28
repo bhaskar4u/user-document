@@ -88,7 +88,9 @@ Websocket
 Clone the repository and install dependencies:
 
 git clone https://github.com/bhaskar4u/user-document.git
+
 cd user-document
+
 npm install
 
 
