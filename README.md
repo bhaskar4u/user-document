@@ -111,9 +111,24 @@ npm run start:dev ingestion
 ## 🔹 Run with Docker Compose
 docker compose up -d
 
-## 🧪 Running Tests
-# Unit tests
+## Run All Tests
+
 npm run test
+## Run Individual Service Tests
+Run tests for specific microservices in watch mode for continuous testing:
+
+### Auth Service
+npm run test:watch auth
+
+### Document Service
+npm run test:watch documents
+
+### Ingestion Service
+npm run test:watch ingestion
+
+### API Gateway
+npm run test:watch api-gateway
+
 
 # Test coverage
 npm run test:cov
@@ -122,20 +137,85 @@ npm run test:cov
 ## 🛠 API Endpoints
 🔹 Authentication
 POST /users/register – Register a new user
+✅ Request:
+
+{
+  "username": "yourname",
+  "email": "example@example.com",
+  "password": "123456"
+}
+✅ Response:"user created successfully"
 
 POST /users/login – Authenticate and receive a JWT token
+✅ Request:
 
+{
+  "email": "bhaskar@example.com",
+  "password": "123456"
+}
+✅ Response:
+
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
 GET /users/profile – Get the authenticated user's profile
+✅ Request (Authorization Header Required):
+{
+  "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+✅ Response:
+
+{
+  "id": 1,
+  "username": "bhaskar",
+  "email": "bhaskar@example.com"
+}
 
 🔹 Documents
 POST /documents/upload – Upload a document (Authenticated users)
+✅ Request (Authorization Header Required):
 
-GET /documents/:id – Retrieve document details (Role-based access control)
+{
+  "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+(Attach the file in the request)
 
+✅ Response:
+
+{
+  "success": true,
+  "documentId": 6
+}
 🔹 Ingestion
 POST /ingestion/start – Start document ingestion
+✅ Request (Authorization Header Required):
 
+{
+  "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+✅ Body:
+{
+  "documentId": 1
+}
+✅ Response:
+
+{
+  "message": "Ingestion started",
+  "documentId": 1,
+  "status": "Processing"
+}
 GET /ingestion/status/:documentId – Track ingestion status in real-time
+✅ Request (Authorization Header Required):
+
+{
+  "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+✅ Response:
+
+{
+  "documentId": 1,
+  "status": "Completed"
+}
 
 ## 🛠 Tech Stack
 Technology	Purpose
