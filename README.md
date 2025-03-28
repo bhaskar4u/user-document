@@ -136,9 +136,10 @@ $ npm run test:cov
 ## 🛠 API Endpoints
 
 🔹 Authentication
+
 📌 Register a New User
 
-POST /users/register
+🚀 POST /users/register
 
 ✅ Request:
 
@@ -154,7 +155,7 @@ POST /users/register
 
 📌 Login & Get JWT Token
 
-POST /users/login
+🚀 POST /users/login
 
 ✅ Request:
 
@@ -170,7 +171,8 @@ POST /users/login
 }
 
 📌 Get User Profile (Requires Authentication)
-GET /users/profile
+
+🚀 GET /users/profile
 
 ✅ Request (Authorization Header Required):
 
@@ -188,9 +190,10 @@ GET /users/profile
 
 
 🔹 Documents
+
 📌 Upload a Document (Requires Authentication)
 
-POST /documents/upload
+🚀 POST /documents/upload
 
 ✅ Request (Authorization Header Required):
 
@@ -204,9 +207,10 @@ POST /documents/upload
 }
 
 🔹 Ingestion
+
 📌 Start Document Ingestion (Requires Authentication)
 
-POST /ingestion/start
+🚀 POST /ingestion/start
 
 ✅ Request (Authorization Header Required):
 
@@ -230,7 +234,7 @@ POST /ingestion/start
 
 📌 Track Ingestion Status in Real-Time (Requires Authentication)
 
-GET /ingestion/status/:documentId
+🚀 GET /ingestion/status/:documentId
 
 ✅ Request (Authorization Header Required):
 
