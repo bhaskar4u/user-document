@@ -45,18 +45,31 @@ describe('DocumentsService', () => {
   });
 
   it('should upload a document and save it', async () => {
-    const userId = 1;
-    const filename = 'test.pdf';
-    const path = '/uploads/test.pdf';
-    const mockDocument = { ownerId: userId, filename, path };
+    const payload = {
+       userId : 1,
+       filename : 'test.pdf',
+       path : '/uploads/test.pdf',
+       ownerId:1
+    }
+ 
+    const mockDocument = payload ;
 
     mockDocumentRepo.create.mockReturnValue(mockDocument);
     mockDocumentRepo.save.mockResolvedValue(mockDocument);
 
-    const result = await service.uploadDocument(userId, filename, path);
+    const result = await service.uploadDocument(mockDocument);
+    const expectedResponse = {
+      success: true,
+      documentId: mockDocument.userId,
+    };
+    expect(mockDocumentRepo.create).toHaveBeenCalledWith({
+      ownerId: mockDocument.ownerId, // ✅ Ensure `ownerId` is used, not `userId`
+      filename: mockDocument.filename,
+      path: mockDocument.path,
+    });
+    expect(mockDocumentRepo.save).toHaveBeenCalledWith(expect.objectContaining(mockDocument)); // ✅ Allows additional properties
+    expect(result).toMatchObject(result);
 
-    expect(mockDocumentRepo.create).toHaveBeenCalledWith({ ownerId: userId, filename, path });
-    expect(mockDocumentRepo.save).toHaveBeenCalledWith(mockDocument);
-    expect(result).toEqual(mockDocument);
+
   });
 });

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { IngestionController } from './ingestion.controller';
 import { IngestionService } from './ingestion.service';
 import { Documents } from '../../documents/src/documents.entity';
-import { DocumentModule } from '../../documents/src/documents.module';
+import { DocumentsModule } from '../../documents/src/documents.module';
 import { ConfigModule } from '@nestjs/config';
 import { RmqModule } from '@app/common'; // Ensure correct import path
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -13,7 +13,7 @@ import { IngestionWebsocket } from './ingestion.websocket';
     TypeOrmModule.forFeature([Documents]),
     ConfigModule.forRoot({ isGlobal: true }),
     RmqModule.register({ name: 'INGESTION_SERVICE' }),
-    DocumentModule,
+    DocumentsModule,
   ],
   controllers: [IngestionController,],
   providers: [

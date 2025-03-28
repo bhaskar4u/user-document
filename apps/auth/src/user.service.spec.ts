@@ -59,7 +59,7 @@ describe('UserService', () => {
       };
 
       userRepository.findOne.mockResolvedValue(mockUser);
-      jest.spyOn(bcrypt, 'compare').mockResolvedValue(true);
+      jest.spyOn(bcrypt, 'compare').mockResolvedValue(true as never);
 
       const result = await userService.loginUser({ email: 'john@example.com', password: 'password123' });
 

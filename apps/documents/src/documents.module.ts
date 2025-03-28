@@ -14,4 +14,4 @@ import {DocumentsService} from './documents.service'
   providers: [DocumentsService,RmqService],
   exports: [TypeOrmModule],
 })
-export class DocumentModule {}
+export class DocumentsModule {}

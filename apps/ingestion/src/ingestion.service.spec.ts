@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Documents } from '../../documents/src/documents.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
+import { IngestionWebsocket } from './ingestion.websocket';
 
 enum DocumentStatus {
   PROCESSING = 'Processing',
@@ -13,16 +14,28 @@ enum DocumentStatus {
 describe('IngestionService', () => {
   let service: IngestionService;
   let documentRepo: Repository<Documents>;
+  let websocket: IngestionWebsocket;
 
   const mockDocumentRepo = {
     findOne: jest.fn(),
     update: jest.fn(),
   };
 
+  const mockWebsocket = {
+    sendUpdate: jest.fn(), // Mock sendUpdate function
+    server: {
+      emit: jest.fn(), // Mock emit to prevent undefined error
+    },
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         IngestionService,
+        {
+          provide: IngestionWebsocket,
+          useValue: mockWebsocket, // Provide mocked WebSocket
+        },
         {
           provide: getRepositoryToken(Documents),
           useValue: mockDocumentRepo,
@@ -32,6 +45,9 @@ describe('IngestionService', () => {
 
     service = module.get<IngestionService>(IngestionService);
     documentRepo = module.get<Repository<Documents>>(getRepositoryToken(Documents));
+    websocket = module.get<IngestionWebsocket>(IngestionWebsocket);
+
+    jest.clearAllMocks(); // Reset mocks before each test
   });
 
   it('should be defined', () => {
@@ -58,6 +74,13 @@ describe('IngestionService', () => {
 
       expect(mockDocumentRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 }, select: ['id', 'status'] });
       expect(mockDocumentRepo.update).toHaveBeenCalledWith(1, { status: DocumentStatus.PROCESSING });
+
+      // Ensure WebSocket emit is called correctly
+      expect(websocket.sendUpdate).toHaveBeenCalledWith( // Correctly mocks sendUpdate function
+        '1',
+        'Processing'
+      );
+
       expect(result).toEqual({ message: 'Ingestion started', documentId: 1, status: DocumentStatus.PROCESSING });
     });
   });
@@ -80,4 +103,3 @@ describe('IngestionService', () => {
     });
   });
 });
-

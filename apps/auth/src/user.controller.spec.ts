@@ -5,13 +5,16 @@ import { User,UserRole } from './user.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 const mockUserRepository = () => ({
   findOne: jest.fn(),
   save: jest.fn(),
 });
-
+jest.mock('bcrypt', () => ({
+  hash: jest.fn().mockResolvedValue('hashed_password'),
+  compare: jest.fn().mockResolvedValue(true),
+}));
 describe('UserService', () => {
   let userService: UserService;
   let userRepository: jest.Mocked<Repository<User>>;
@@ -59,7 +62,7 @@ describe('UserService', () => {
       };
 
       userRepository.findOne.mockResolvedValue(mockUser);
-      jest.spyOn(bcrypt, 'compare').mockResolvedValue(true);
+      jest.spyOn(bcrypt, 'compare').mockResolvedValue(true as never);
 
       const result = await userService.loginUser({ email: 'john@example.com', password: 'password123' });
 
