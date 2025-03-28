@@ -13,6 +13,45 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## 🔹 Overview
+This NestJS-based microservices application includes:
+
+User Management & Authentication (JWT-based authentication with RBAC)
+
+Document Management (File uploads & access control)
+
+Event-Driven Communication (RabbitMQ for messaging)
+
+Database (PostgreSQL with TypeORM)
+
+Ingestion System (Real-time processing & tracking)
+
+Docker Deployment (Containerized services for scalability)
+
+
+## 🔹 Microservices Structure
+Service Name	Description
+api-gateway	Handles authentication, routing, and user-facing API endpoints
+user-service	Manages user registration, authentication, and profiles
+document-service	Handles document uploads, permissions, and storage
+ingestion-service	Processes document ingestion asynchronously
+
+
+## 🚀 Getting Started
+🔧 Prerequisites
+Ensure you have the following installed:
+
+Node.js (v18+)
+
+Docker & Docker Compose
+
+PostgreSQL
+
+RabbitMQ
+
+Websocket
+
+
 ## Project setup
 
 ## 📌 Installation
@@ -92,43 +131,6 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
-## 🔹 Overview
-This NestJS-based microservices application includes:
-
-User Management & Authentication (JWT-based authentication with RBAC)
-
-Document Management (File uploads & access control)
-
-Event-Driven Communication (RabbitMQ for messaging)
-
-Database (PostgreSQL with TypeORM)
-
-Ingestion System (Real-time processing & tracking)
-
-Docker Deployment (Containerized services for scalability)
-
-
-## 🔹 Microservices Structure
-Service Name	Description
-api-gateway	Handles authentication, routing, and user-facing API endpoints
-user-service	Manages user registration, authentication, and profiles
-document-service	Handles document uploads, permissions, and storage
-ingestion-service	Processes document ingestion asynchronously
-
-
-## 🚀 Getting Started
-🔧 Prerequisites
-Ensure you have the following installed:
-
-Node.js (v18+)
-
-Docker & Docker Compose
-
-PostgreSQL
-
-RabbitMQ
-
-Websocket
 
 
 ## 🛠 API Endpoints
