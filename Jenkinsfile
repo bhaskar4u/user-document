@@ -1,10 +1,5 @@
 pipeline {
-  agent {
-  docker {
-    image 'node'  // or a custom image with Docker CLI
-    args '-v /var/run/docker.sock:/var/run/docker.sock'
-  }
-}
+  agent any
 
   environment {
     DOCKER_REGISTRY = 'bhaskarsahni'
