@@ -37,7 +37,7 @@ environment {
       }
     }
   
-
+  }
   post {
     failure {
       echo "Build or deployment failed."
@@ -46,6 +46,6 @@ environment {
       echo "Pipeline executed successfully."
     }
   }
-  }
+  
 }
 
