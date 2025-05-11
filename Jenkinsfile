@@ -31,6 +31,21 @@ environment {
     }
   }
 }
+      stage('Deploy') {
+      steps {
+        sh 'docker compose -f docker.compose.yml up -d --build'
+      }
+    }
+  }
+
+  post {
+    failure {
+      echo "Build or deployment failed."
+    }
+    success {
+      echo "Pipeline executed successfully."
+    }
+  }
   }
 }
 
