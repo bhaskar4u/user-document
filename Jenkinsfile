@@ -13,7 +13,7 @@ pipeline {
         git branch: 'master', url: 'https://github.com/bhaskar4u/user-document.git'
       }
     }
-}
+
     stage('Build Docker Images') {
       steps {
         script {
@@ -29,6 +29,6 @@ pipeline {
         }
       }
     }
-  
+  }
 }
 
