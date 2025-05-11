@@ -1,7 +1,7 @@
 pipeline {
   agent {
   docker {
-    image 'node:18'  // or a custom image with Docker CLI
+    image 'node'  // or a custom image with Docker CLI
     args '-v /var/run/docker.sock:/var/run/docker.sock'
   }
 }
