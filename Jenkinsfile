@@ -1,5 +1,10 @@
 pipeline {
-  agent any
+  agent {
+  docker {
+    image 'node:18'  // or a custom image with Docker CLI
+    args '-v /var/run/docker.sock:/var/run/docker.sock'
+  }
+}
 
   environment {
     DOCKER_REGISTRY = 'bhaskarsahni'
@@ -15,20 +20,20 @@ pipeline {
     }
 
     stage('Build Docker Images') {
-      steps {
-        script {
-          def services = ['auth', 'documents', 'ingestion', 'api-gateway']
-          for (svc in services) {
-            sh """
-              docker build \
-                --target production \
-                -f apps/${svc}/Dockerfile \
-                -t $DOCKER_REGISTRY/${svc}:${IMAGE_TAG} .
-            """
-          }
-        }
+  steps {
+    script {
+      def services = ['auth', 'documents', 'ingestion', 'api-gateway']
+      for (svc in services) {
+        bat """
+          docker build ^
+            --target production ^
+            -f apps/${svc}/Dockerfile ^
+            -t %DOCKER_REGISTRY%/${svc}:%IMAGE_TAG% .
+        """
       }
     }
+  }
+}
   }
 }
 
