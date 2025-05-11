@@ -1,10 +1,12 @@
 pipeline {
   agent any
 
-  environment {
-    DOCKER_REGISTRY = 'bhaskarsahni'
-    IMAGE_TAG = "${env.BUILD_NUMBER}"
-  }
+environment {
+  DOCKER_HOST = 'tcp://localhost:2375'
+  DOCKER_REGISTRY = 'bhaskarsahni'
+  IMAGE_TAG = "${env.BUILD_NUMBER}"
+}
+
 
   stages {
 
