@@ -1,4 +1,4 @@
-import { Controller, Post,  UseInterceptors, Inject, Request, UseGuards } from '@nestjs/common';
+import { Controller, Post,  UseInterceptors, Inject, Request, UseGuards, BadRequestException } from '@nestjs/common';
 import { UploadedFile } from '@nestjs/common';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
@@ -22,7 +22,11 @@ export class ApiGatewayDocumentController {
       },
     }),
   }))
+
   async uploadDocument(@UploadedFile() file: Express.Multer.File, @Request() req) {
+  if (!file) {
+  throw new BadRequestException('No file uploaded');
+}
     
     const uploadData = {
       userId: req.user.id,

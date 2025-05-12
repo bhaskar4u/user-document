@@ -33,7 +33,7 @@ export class IngestionService {
     }
   
     await this.documentRepo.update(docId, { status: DocumentStatus.PROCESSING });
-    this.ingestionWebsocket.sendUpdate(documentId, 'Processing');
+     this.ingestionWebsocket.sendUpdate(documentId, 'Processing');
   
     setTimeout(async () => {
       await this.documentRepo.update(docId, { status: DocumentStatus.COMPLETED });

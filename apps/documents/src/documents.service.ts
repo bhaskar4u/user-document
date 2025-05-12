@@ -23,7 +23,7 @@ export class DocumentsService implements OnModuleInit {
   handleUserCreated(data: { userId: number }) {
     console.log(`User created with ID: ${data.userId}`);
   }
-  @MessagePattern('document.uploaded')
+  @MessagePattern('document.upload')
   async uploadDocument(payload: UploadPayload) {
     console.log(`Uploading document for user ${payload.userId}`); // ✅ Added log
   
