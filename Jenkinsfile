@@ -33,7 +33,7 @@ environment {
 }
       stage('Deploy') {
       steps {
-        sh 'docker compose -f docker.compose.yml up -d --build'
+        bat 'docker compose -f docker.compose.yml up -d --build'
       }
     }
   
