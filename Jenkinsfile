@@ -32,7 +32,7 @@ environment {
   }
 }
 
-   stage('Run Test for all services') {
+   stage('Run Test for all service') {
       steps {
         bat 'npm install'
         bat 'npm run test'
