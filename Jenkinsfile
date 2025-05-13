@@ -31,6 +31,13 @@ environment {
     }
   }
 }
+
+   stage('Run Tests') {
+      steps {
+        bat 'npm install'
+        bat 'npm run test'
+      }
+    }
       stage('Deploy') {
       steps {
         bat 'docker compose -f docker.compose.yml up -d --build'
