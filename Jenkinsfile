@@ -16,6 +16,16 @@ environment {
       }
     }
 
+
+  stage('Docker Login') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
+          bat 'echo Logging into Docker Hub...'
+          bat "docker login -u %DOCKERHUB_USER% -p %DOCKERHUB_PASS%"
+        }
+      }
+    }
+
     stage('Build Docker Images') {
   steps {
     script {
@@ -57,7 +67,7 @@ environment {
       }
     }
 
-    
+
       stage('Deploy') {
       steps {
         bat 'docker compose -f docker.compose.yml up -d --build'
