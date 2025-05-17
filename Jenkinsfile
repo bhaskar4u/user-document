@@ -39,15 +39,16 @@ stage('Init Tags') {
       }
     }
 
-    stage('Build Docker Images') {
+stage('Build Docker Images') {
   steps {
     script {
       def services = ['auth', 'documents', 'ingestion', 'api-gateway']
       for (svc in services) {
+        def dockerfilePath = "apps/${svc}/Dockerfile"
+        def imageName = "${env.DOCKER_REGISTRY}/${svc}:${env.IMAGE_TAG}"
+
         bat """
           docker build ^
-            --target production ^
-            -f apps/${svc}/Dockerfile ^
             --target production ^
             -f ${dockerfilePath} ^
             -t ${imageName} .
@@ -56,6 +57,7 @@ stage('Init Tags') {
     }
   }
 }
+
 
    stage('Run Test for all service') {
       steps {
