@@ -48,9 +48,9 @@ stage('Init Tags') {
           docker build ^
             --target production ^
             -f apps/${svc}/Dockerfile ^
-            -t %DOCKER_REGISTRY%/${svc}:%IMAGE_TAG% .
-            -t %DOCKER_REGISTRY%/${svc}:%GIT_COMMIT% ^
-            -t %DOCKER_REGISTRY%/${svc}:%DATE_TAG% .
+            --target production ^
+            -f ${dockerfilePath} ^
+            -t ${imageName} .
         """
       }
     }
