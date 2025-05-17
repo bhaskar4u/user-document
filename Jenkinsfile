@@ -56,11 +56,11 @@ environment {
       }
       steps {
         withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-          sh 'echo $PASSWORD | docker login -u $USERNAME --password-stdin'
+          bat 'echo $PASSWORD | docker login -u $USERNAME --password-stdin'
           script {
             def services = ['auth', 'documents', 'ingestion', 'api-gateway']
             for (svc in services) {
-              sh "docker push $DOCKER_REGISTRY/${svc}:${IMAGE_TAG}"
+              bat "docker push $DOCKER_REGISTRY/${svc}:${IMAGE_TAG}"
             }
           }
         }
