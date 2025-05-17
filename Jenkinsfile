@@ -46,6 +46,7 @@ stage('Build Docker Images') {
       for (svc in services) {
         def dockerfilePath = "apps/${svc}/Dockerfile"
         def imageName = "${env.DOCKER_REGISTRY}/${svc}:${env.IMAGE_TAG}"
+        echo "Pushing image: ${imageName}"
 
         bat """
           docker build ^
