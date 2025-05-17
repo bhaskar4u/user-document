@@ -70,6 +70,7 @@ pipeline {
     stage('Push Docker Images') {
       steps {
         script {
+          def repo = "${env.DOCKER_REGISTRY}/user-document"
           def services = ['auth', 'documents', 'ingestion', 'api-gateway']
 
           for (svc in services) {
