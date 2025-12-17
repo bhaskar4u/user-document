@@ -1,0 +1,139 @@
+name: Trigger Jenkins Job (with params)
+
+on:
+  push:
+    branches: [ master,main ]   # matches your Jenkinsfile 'master' usage; change if needed
+  workflow_dispatch:
+
+jobs:
+  trigger-jenkins:
+    runs-on: ubuntu-latest
+    env:
+      # Jenkins job path (change if your job is in folders)
+      JENKINS_JOB_PATH: job/user-document
+
+    steps:
+      - name: Show context (branch/commit)
+        run: |
+          echo "GITHUB_REF_NAME=${GITHUB_REF_NAME}"
+          echo "GITHUB_SHA=${GITHUB_SHA}"
+
+      - name: Prepare params
+        id: params
+        run: |
+          # derive short commit & date tag
+          GIT_COMMIT_SHORT=$(echo "${GITHUB_SHA}" | cut -c1-8)
+          DATE_TAG=$(date -u +%Y%m%d%H%M%S)
+          echo "git_commit=${GIT_COMMIT_SHORT}" >> $GITHUB_OUTPUT
+          echo "branch=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+          echo "date_tag=${DATE_TAG}" >> $GITHUB_OUTPUT
+
+      - name: Get Jenkins crumb (if enabled)
+        id: crumb
+        env:
+          JENKINS_URL: ${{ secrets.JENKINS_URL }}
+          JENKINS_USER: ${{ secrets.JENKINS_USER }}
+          JENKINS_TOKEN: ${{ secrets.JENKINS_TOKEN }}
+        run: |
+          set -e
+          RESP=$(curl -s -u "${JENKINS_USER}:${JENKINS_TOKEN}" "${JENKINS_URL}/crumbIssuer/api/json" || true)
+          if [ -z "$RESP" ] || [ "$RESP" = "null" ] || ! echo "$RESP" | jq -e .crumb >/dev/null 2>&1; then
+            echo "crumb_enabled=false" >> $GITHUB_OUTPUT
+          else
+            echo "crumb_enabled=true"  >> $GITHUB_OUTPUT
+            echo "crumb=$(echo "$RESP" | jq -r .crumb)" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Capture last build number (before trigger)
+        id: before
+        env:
+          JENKINS_URL: ${{ secrets.JENKINS_URL }}
+          JENKINS_USER: ${{ secrets.JENKINS_USER }}
+          JENKINS_TOKEN: ${{ secrets.JENKINS_TOKEN }}
+        run: |
+          set -e
+          URL="${JENKINS_URL}/${JENKINS_JOB_PATH}/api/json"
+          LAST=$(curl -s -u "${JENKINS_USER}:${JENKINS_TOKEN}" "$URL" | jq -r '.lastBuild.number // 0')
+          echo "last_before=$LAST" >> $GITHUB_OUTPUT
+          echo "Last build before trigger: $LAST"
+
+      - name: Trigger Jenkins build (with parameters)
+        id: trigger
+        env:
+          JENKINS_URL: ${{ secrets.JENKINS_URL }}
+          JENKINS_USER: ${{ secrets.JENKINS_USER }}
+          JENKINS_TOKEN: ${{ secrets.JENKINS_TOKEN }}
+          BRANCH: ${{ steps.params.outputs.branch }}
+          GIT_COMMIT: ${{ steps.params.outputs.git_commit }}
+          DATE_TAG: ${{ steps.params.outputs.date_tag }}
+        run: |
+          set -e
+          JOB_API="${JENKINS_URL}/${JENKINS_JOB_PATH}/buildWithParameters"
+          EXTRA_HEADER=""
+          if [ "${{ steps.crumb.outputs.crumb_enabled }}" = "true" ]; then
+            EXTRA_HEADER="-H Jenkins-Crumb:${{ steps.crumb.outputs.crumb }}"
+          fi
+
+          echo "Triggering Jenkins job with BRANCH=${BRANCH} GIT_COMMIT=${GIT_COMMIT} DATE_TAG=${DATE_TAG}"
+
+          CODE=$(curl -s -o /dev/null -w "%{http_code}" -u "${JENKINS_USER}:${JENKINS_TOKEN}" -X POST $EXTRA_HEADER \
+            --data "BRANCH=${BRANCH}" --data "GIT_COMMIT=${GIT_COMMIT}" --data "DATE_TAG=${DATE_TAG}" \
+            "${JOB_API}")
+
+          echo "HTTP status: $CODE"
+          if [ "$CODE" != "201" ] && [ "$CODE" != "200" ]; then
+            echo "Failed to trigger Jenkins build (HTTP $CODE)"
+            exit 1
+          fi
+          echo "Triggered Jenkins job successfully."
+
+      - name: Wait for new build to start and get its number
+        id: wait_build
+        env:
+          JENKINS_URL: ${{ secrets.JENKINS_URL }}
+          JENKINS_USER: ${{ secrets.JENKINS_USER }}
+          JENKINS_TOKEN: ${{ secrets.JENKINS_TOKEN }}
+          LAST_BEFORE: ${{ steps.before.outputs.last_before }}
+        run: |
+          set -e
+          JOB_URL="${JENKINS_URL}/${JENKINS_JOB_PATH}"
+          echo "Waiting for new build number..."
+          NEW=""
+          for i in $(seq 1 120); do
+            NEW=$(curl -s -u "${JENKINS_USER}:${JENKINS_TOKEN}" "${JOB_URL}/api/json" | jq -r '.lastBuild.number // 0')
+            if [ "$NEW" -gt "$LAST_BEFORE" ]; then
+              echo "Detected new build: $NEW"
+              break
+            fi
+            sleep 3
+          done
+          if [ -z "$NEW" ] || [ "$NEW" -le "$LAST_BEFORE" ]; then
+            echo "Timed out waiting for Jenkins to start a new build."
+            exit 1
+          fi
+          echo "build_number=$NEW" >> $GITHUB_OUTPUT
+
+      - name: Poll Jenkins build until completion
+        env:
+          JENKINS_URL: ${{ secrets.JENKINS_URL }}
+          JENKINS_USER: ${{ secrets.JENKINS_USER }}
+          JENKINS_TOKEN: ${{ secrets.JENKINS_TOKEN }}
+          BUILD_NUM: ${{ steps.wait_build.outputs.build_number }}
+        run: |
+          set -e
+          BUILD_URL="${JENKINS_URL}/${JENKINS_JOB_PATH}/${BUILD_NUM}/api/json"
+          echo "Polling $BUILD_URL"
+          RESULT=""
+          for i in $(seq 1 600); do
+            RESULT=$(curl -s -u "${JENKINS_USER}:${JENKINS_TOKEN}" "$BUILD_URL" | jq -r '.result // "IN_PROGRESS"')
+            if [ "$RESULT" = "IN_PROGRESS" ] || [ "$RESULT" = "null" ]; then
+              echo "Build #${BUILD_NUM} running..."
+              sleep 5
+            else
+              echo "Build #${BUILD_NUM} finished with result: $RESULT"
+              break
+            fi
+          done
+          if [ "$RESULT" != "SUCCESS" ]; then
+            exit 1
+          fi
