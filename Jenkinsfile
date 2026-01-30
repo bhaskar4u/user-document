@@ -89,13 +89,15 @@ pipeline {
     //       }
     //     }
     //   }
-    }
-
-    stage('Deploy') {
+    
+     stage('Deploy') {
       steps {
         bat 'docker compose up -d'
       }
     }
+    }
+
+   
   }
 
   post {
@@ -106,4 +108,4 @@ pipeline {
       echo '❌ Pipeline failed'
     }
   }
-}
+
