@@ -1,0 +1,29 @@
+# git
+.git
+.gitignore
+
+# node
+node_modules
+apps/**/node_modules
+
+# build output
+dist
+apps/**/dist
+coverage
+.tmp
+.cache
+
+# logs
+*.log
+
+# env
+.env
+.env.*
+
+# editor
+.vscode
+.idea
+
+# docker junk
+Dockerfile
+docker-compose.yml
