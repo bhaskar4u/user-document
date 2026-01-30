@@ -1,0 +1,95 @@
+version: "3.9"
+
+services:
+  auth:
+    build:
+      context: .
+      dockerfile: apps/auth/Dockerfile
+      target: development
+    command: npm run start:dev auth
+    env_file:
+      - apps/.env
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - "3003:3000"
+    networks:
+      - user_management_net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  documents:
+    build:
+      context: .
+      dockerfile: apps/documents/Dockerfile
+      target: development
+    command: npm run start:dev documents
+    env_file:
+      - apps/.env
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - "3002:3000"
+    networks:
+      - user_management_net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  ingestion:
+    build:
+      context: .
+      dockerfile: apps/ingestion/Dockerfile
+      target: development
+    command: npm run start:dev ingestion
+    env_file:
+      - apps/.env
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - "3001:3000"
+    networks:
+      - user_management_net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: apps/api-gateway/Dockerfile
+      target: development
+    command: npm run start:dev api-gateway
+    env_file:
+      - apps/.env
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - "3000:3000"
+    networks:
+      - user_management_net
+    depends_on:
+      auth:
+        condition: service_healthy
+      documents:
+        condition: service_started
+      ingestion:
+        condition: service_started
