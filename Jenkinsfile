@@ -36,25 +36,45 @@ pipeline {
       }
     }
 
+    // stage('Build Images') {
+    //   steps {
+    //     script {
+    //       def services = ['auth', 'documents', 'ingestion', 'api-gateway']
+
+    //       for (svc in services) {
+    //         def image = "${env.DOCKER_REGISTRY}/${svc}"
+
+    //         bat """
+    //           docker build ^
+    //             --cache-from=${image}:latest ^
+    //             -t ${image}:${env.IMAGE_TAG} ^
+    //             -t ${image}:latest ^
+    //             apps/${svc}
+    //         """
+    //       }
+    //     }
+    //   }
+    // }
     stage('Build Images') {
       steps {
         script {
           def services = ['auth', 'documents', 'ingestion', 'api-gateway']
 
           for (svc in services) {
-            def image = "${env.DOCKER_REGISTRY}/${svc}"
+            def image = "bhaskarsahni/${svc}"
 
             bat """
-              docker build ^
-                --cache-from=${image}:latest ^
-                -t ${image}:${env.IMAGE_TAG} ^
-                -t ${image}:latest ^
-                apps/${svc}
+            docker build ^
+            --cache-from=${image}:latest ^
+            -f apps/${svc}/Dockerfile ^
+            -t ${image}:${BUILD_NUMBER} ^
+            -t ${image}:latest ^
+            .
             """
-          }
-        }
       }
     }
+  }
+}
 
     stage('Push Images') {
       steps {
