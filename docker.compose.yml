@@ -6,6 +6,7 @@ volumes:
   postgres_data:  # Persistent volume for PostgreSQL
   rabbitmq_data:  # Persistent volume for RabbitMQ
   auth_data: # Persistent volumw for aUTH
+  redis_data:
 
 services:
   postgres:
@@ -56,6 +57,44 @@ services:
       start_period: 15s
     tty: true
     stdin_open: true
+  redis:
+    image: redis:7.2
+    container_name: redis_container
+    restart: unless-stopped
+
+    command: >
+      redis-server
+      --appendonly yes
+      --appendfsync everysec
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+      --tcp-keepalive 60
+      --timeout 300
+
+    ports:
+      - "6379:6379"
+
+    networks:
+      - user_management_net
+
+    volumes:
+      - redis_data:/data
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 5
+      start_period: 10s
+
+    tty: true
+    stdin_open: true
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+  
 
   auth:
     build:
