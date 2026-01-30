@@ -1,0 +1,195 @@
+networks:
+  user_management_net:
+    driver: bridge
+
+volumes:
+  postgres_data:  # Persistent volume for PostgreSQL
+  rabbitmq_data:  # Persistent volume for RabbitMQ
+  auth_data: # Persistent volumw for aUTH
+  redis_data:
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres_container
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: mydb
+    ports:
+      - "5432:5432"
+    networks:
+      - user_management_net
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      retries: 5
+      start_period: 10s
+    tty: true
+    stdin_open: true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq_container
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"  # Management UI
+    networks:
+      - user_management_net
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmqctl status"]
+      interval: 10s
+      retries: 5
+      start_period: 15s
+    tty: true
+    stdin_open: true
+  redis:
+    image: redis:7.2
+    container_name: redis_container
+    restart: unless-stopped
+
+    command: >
+      redis-server
+      --appendonly yes
+      --appendfsync everysec
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+      --tcp-keepalive 60
+      --timeout 300
+
+    ports:
+      - "6379:6379"
+
+    networks:
+      - user_management_net
+
+    volumes:
+      - redis_data:/data
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 5
+      start_period: 10s
+
+    tty: true
+    stdin_open: true
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+  
+
+  auth:
+    build:
+      context: .
+      dockerfile: ./apps/auth/Dockerfile
+      target: development
+    command: npm run start:dev auth
+    env_file:
+      - ./apps/.env
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '3003:3000'
+    networks:
+      - user_management_net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    tty: true
+    stdin_open: true
+
+  documents:
+    build:
+      context: .
+      dockerfile: ./apps/documents/Dockerfile
+      target: development
+    command: npm run start:dev documents
+    env_file:
+      - ./apps/.env
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '3002:3000'
+    networks:
+      - user_management_net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    tty: true
+    stdin_open: true
+
+  ingestion:
+    build:
+      context: .
+      dockerfile: ./apps/ingestion/Dockerfile
+      target: development
+    command: npm run start:dev ingestion
+    env_file:
+      - ./apps/.env
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '3001:3000'
+    networks:
+      - user_management_net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    tty: true
+    stdin_open: true  
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: ./apps/api-gateway/Dockerfile
+      target: development
+    command: npm run start:dev api-gateway
+    env_file:
+      - ./apps/.env
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '3000:3000'
+    networks:
+      - user_management_net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      auth:
+        condition: service_started
+      documents:
+        condition: service_started
+      ingestion:
+        condition: service_started  
+    tty: true
+    stdin_open: true
