@@ -76,19 +76,19 @@ pipeline {
   }
 }
 
-    stage('Push Images') {
-      steps {
-        script {
-          def services = ['auth', 'documents', 'ingestion', 'api-gateway']
+    // stage('Push Images') {
+    //   steps {
+    //     script {
+    //       def services = ['auth', 'documents', 'ingestion', 'api-gateway']
 
-          for (svc in services) {
-            def image = "${env.DOCKER_REGISTRY}/${svc}"
+    //       for (svc in services) {
+    //         def image = "${env.DOCKER_REGISTRY}/${svc}"
 
-            bat "docker push ${image}:${env.IMAGE_TAG}"
-            bat "docker push ${image}:latest"
-          }
-        }
-      }
+    //         bat "docker push ${image}:${env.IMAGE_TAG}"
+    //         bat "docker push ${image}:latest"
+    //       }
+    //     }
+    //   }
     }
 
     stage('Deploy') {
