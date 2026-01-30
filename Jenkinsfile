@@ -21,7 +21,7 @@ pipeline {
 
     stage('Build & Deploy') {
       steps {
-        bat 'docker compose up -d --build'
+        bat 'docker compose -f docker-compose.yml up -d --build'
       }
     }
   }
