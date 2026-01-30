@@ -11,7 +11,7 @@ pipeline {
 
   environment {
     DOCKER_BUILDKIT = '1'
-    COMPOSE_FILE    = "docker-compose.infra.yml:docker-compose.${params.ENV}.yml"
+    COMPOSE_FILE    = "docker-compose.infra.yml;docker-compose.${params.ENV}.yml"
   }
 
   stages {
