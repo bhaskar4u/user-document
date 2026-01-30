@@ -37,20 +37,20 @@ pipeline {
     }
 
     /* ---------------- DOCKER LOGIN ---------------- */
-    stage('Docker Login') {
-      steps {
-        withCredentials([
-          usernamePassword(
-            credentialsId: 'docker-hub-credentials',
-            usernameVariable: 'DOCKERHUB_USER',
-            passwordVariable: 'DOCKERHUB_PASS'
-          )
-        ]) {
-          bat 'echo Logging into Docker Hub...'
-          bat 'echo %DOCKERHUB_PASS% | docker login -u %DOCKERHUB_USER% --password-stdin'
-        }
-      }
-    }
+    // stage('Docker Login') {
+    //   steps {
+    //     withCredentials([
+    //       usernamePassword(
+    //         credentialsId: 'docker-hub-credentials',
+    //         usernameVariable: 'DOCKERHUB_USER',
+    //         passwordVariable: 'DOCKERHUB_PASS'
+    //       )
+    //     ]) {
+    //       bat 'echo Logging into Docker Hub...'
+    //       bat 'echo %DOCKERHUB_PASS% | docker login -u %DOCKERHUB_USER% --password-stdin'
+    //     }
+    //   }
+    // }
 
     /* ---------------- BUILD IMAGES ---------------- */
     stage('Build & Tag Docker Images') {
@@ -87,26 +87,26 @@ pipeline {
     }
 
     /* ---------------- PUSH IMAGES ---------------- */
-    stage('Push Docker Images') {
-      steps {
-        script {
-          def services = ['auth', 'documents', 'ingestion', 'api-gateway']
+    // stage('Push Docker Images') {
+    //   steps {
+    //     script {
+    //       def services = ['auth', 'documents', 'ingestion', 'api-gateway']
 
-          for (svc in services) {
-            def imageBase = "${env.DOCKER_REGISTRY}/${svc}"
-            def tags = [env.IMAGE_TAG, env.GIT_COMMIT, env.DATE_TAG]
+    //       for (svc in services) {
+    //         def imageBase = "${env.DOCKER_REGISTRY}/${svc}"
+    //         def tags = [env.IMAGE_TAG, env.GIT_COMMIT, env.DATE_TAG]
 
-            for (tag in tags) {
-              if (tag?.trim()) {
-                def fullImage = "${imageBase}:${tag}"
-                echo "Pushing image: ${fullImage}"
-                bat "docker push ${fullImage}"
-              }
-            }
-          }
-        }
-      }
-    }
+    //         for (tag in tags) {
+    //           if (tag?.trim()) {
+    //             def fullImage = "${imageBase}:${tag}"
+    //             echo "Pushing image: ${fullImage}"
+    //             bat "docker push ${fullImage}"
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
 
     /* ---------------- DEPLOY ---------------- */
     stage('Deploy') {
