@@ -56,6 +56,11 @@ pipeline {
         }
       }
     }
+    stage('Debug Compose Files') {
+  steps {
+    bat 'dir'
+  }
+}
 
     /* ---------------- BUILD (ALWAYS) ---------------- */
     stage('Build Images') {
