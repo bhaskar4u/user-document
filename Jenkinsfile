@@ -34,28 +34,36 @@ pipeline {
     }
 
     /* ---------------- PREPARE ENV ---------------- */
-    stage('Prepare Env') {
-      steps {
-        script {
-          def envCredentialMap = [
-            dev: 'apps-env-dev',
-            ci : 'apps-env-ci'
-          ]
+    stage('Prepare Env (Conditional)') {
+  steps {
+    bat '''
+      if exist apps\\.env (
+        echo Using existing .env
+      ) else (
+        echo ERROR: apps\\.env not found
+        exit /b 1
+      )
+    '''
+  }
+}
+    stage('Verify Env') {
+  steps {
+    bat '''
+      if not exist apps\\.env (
+        echo ERROR: .env missing
+        exit /b 1
+      )
+      for /f "usebackq delims==" %%A in (`findstr /R "=" apps\\.env`) do (
+        echo ENV OK
+        goto :done
+      )
+      echo ERROR: .env is empty
+      exit /b 1
+      :done
+    '''
+  }
+}
 
-          withCredentials([
-            file(
-              credentialsId: envCredentialMap[params.ENV],
-              variable: 'ENV_FILE'
-            )
-          ]) {
-            bat '''
-              if not exist apps mkdir apps
-              copy %ENV_FILE% apps\\.env
-            '''
-          }
-        }
-      }
-    }
     stage('Debug Compose Files') {
   steps {
     bat 'dir'
