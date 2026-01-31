@@ -7,6 +7,7 @@ import { ApiGatewayService } from './api-gateway.service';
 import { ApiGatewayDocumentController } from './document/api-gateway-document.controller';
 import { DocumentsModule } from '../../documents/src/documents.module';
 import {ApiGatewayIngestionController  } from './ingestion/api-gateway-ingestion.controller';
+import { HealthcheckController } from './health/healthcheck-controller';
 import {IngestionModule  } from '../../ingestion/src/ingestion.module';
 
 
@@ -23,7 +24,7 @@ import { AuthModule } from './auth/auth.module';
     RmqModule.register({ name: 'DOCUMENT_SERVICE' }), // ✅ Ensure correct name
     RmqModule.register({ name: 'INGESTION_SERVICE' })
   ],
-  controllers: [ApiGatwayUserController, ApiGatewayDocumentController,ApiGatewayController,ApiGatewayIngestionController],
+  controllers: [ApiGatwayUserController, ApiGatewayDocumentController,ApiGatewayController,ApiGatewayIngestionController,HealthcheckController],
   providers:[ApiGatewayService]
 })
 export class ApiGatewayModule {}
