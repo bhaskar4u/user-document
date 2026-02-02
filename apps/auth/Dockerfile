@@ -8,7 +8,7 @@ RUN npm ci
 
 COPY . .
 
-RUN npm run build auth
+RUN npm run build
 
 FROM node:alpine As production
 

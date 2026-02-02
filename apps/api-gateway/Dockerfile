@@ -8,7 +8,7 @@ RUN npm ci
 
 COPY . .
 
-RUN npm run build api-gateway
+RUN npm run build
 
 FROM node:alpine As production
 

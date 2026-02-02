@@ -8,7 +8,7 @@ RUN npm install
 
 COPY . .
 
-RUN npm run build ingestion
+RUN npm run build
 
 FROM node:alpine As production
 
