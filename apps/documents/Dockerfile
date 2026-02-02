@@ -8,7 +8,7 @@ RUN npm install
 
 COPY . .
 
-RUN npm run build auth
+RUN npm run build documents
 
 FROM node:alpine As production
 
