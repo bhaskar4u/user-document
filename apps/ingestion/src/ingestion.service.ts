@@ -43,9 +43,9 @@ export class IngestionService {
     return { message: 'Ingestion started', documentId: docId, status: DocumentStatus.PROCESSING };
   }
 
-  async getStatus(documentId: string) {
+  async getStatus(documentId: number) {
     const document = await this.documentRepo.findOne({
-      where: { id: Number(documentId) },
+      where: { id: documentId },
       select: ['id', 'status'],
     });
 

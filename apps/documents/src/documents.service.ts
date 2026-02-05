@@ -19,10 +19,10 @@ export class DocumentsService implements OnModuleInit {
   console.log('DocumentsService initialized!');
   }
 
-  @MessagePattern('user.created')
-  handleUserCreated(data: { userId: number }) {
-    console.log(`User created with ID: ${data.userId}`);
-  }
+  // @MessagePattern('user.created')
+  // handleUserCreated(data: { userId: number }) {
+  //   console.log(`User created with ID: ${data.userId}`);
+  // }
   @MessagePattern('document.upload')
   async uploadDocument(payload: UploadPayload) {
     console.log(`Uploading document for user ${payload.userId}`); // ✅ Added log

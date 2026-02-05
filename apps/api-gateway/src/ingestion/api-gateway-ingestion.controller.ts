@@ -18,7 +18,7 @@ export class ApiGatewayIngestionController {
   @Get('status/:documentId')
   @UseGuards(JwtAuthGuard)
   async getIngestionStatus(@Param('documentId') documentId: string) {    
-    return this.ingestionService.send('ingestion.status', { documentId });
+    return this.ingestionService.send('ingestion.status', { documentId: Number(documentId) } );
   }
 }
  
