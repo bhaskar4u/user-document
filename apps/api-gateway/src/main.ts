@@ -1,3 +1,4 @@
+import '@libs/runtime/crypto.bootstrap'; // 👈 FIRST LINE (must be first)
 import { NestFactory } from '@nestjs/core';
 import { ApiGatewayModule } from './api-gateway.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';

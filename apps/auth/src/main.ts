@@ -1,3 +1,4 @@
+import '@libs/runtime/crypto.bootstrap'; // 👈 FIRST LINE (must be first)
 import { NestFactory } from '@nestjs/core';
 import { UserModule } from './user.module';
 import { RmqService } from '@app/common';
