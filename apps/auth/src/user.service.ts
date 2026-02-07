@@ -4,47 +4,139 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { User } from './user.entity';
+import { getCache, setCache } from '@app/common/redis/cache';
+import { RpcException } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
-
-
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User) private userRepository: Repository<User>,
-    private jwtService: JwtService,
-    private ConfigService: ConfigService
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    private readonly jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
-  async createUser(createUserDto: { username: string; email: string; password: string }) {
-    const userExist = await this.userRepository.findOne({ where: { email: createUserDto.email } });
-    if (userExist) return { message: "User already exist" }
-    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-    const user = this.userRepository.create({ ...createUserDto, password: hashedPassword });
-    await this.userRepository.save(user);
-    return { message: 'User created successfully' };
+  // -------------------------
+  // CREATE USER
+  // -------------------------
+  async createUser(dto: { username: string; email: string; password: string }) {
+    try {
+      const existing = await this.userRepository.findOne({
+        where: { email: dto.email },
+        select: ['id'],
+      });
 
+      if (existing) {
+        throw new RpcException({
+          code: 409,
+          message: 'User already exists',
+        });
+      }
 
-  }
+      const hashedPassword = await bcrypt.hash(dto.password, 10);
 
-    async loginUser(loginDto: { email: string; password: string }) {
-    const user = await this.userRepository.findOne({ where: { email: loginDto.email } });
+      const user = this.userRepository.create({
+        username: dto.username,
+        email: dto.email,
+        password: hashedPassword,
+      });
 
-    if (!user || !(await bcrypt.compare(loginDto.password, user.password))) {
-      throw new Error('Invalid credentials');
+      await this.userRepository.save(user);
+
+      return { message: 'User created successfully' };
+    } catch (err) {
+      if (err instanceof RpcException) throw err;
+
+      throw new RpcException({
+        code: 500,
+        message: 'Failed to create user',
+      });
     }
-
-    const token = this.jwtService.sign(
-      { sub: user.id, username: user.username },
-      { secret: this.ConfigService.get<string>('JWT_SECRET') } // ✅ Use ConfigService
-    );
-
-    return { access_token: token };
   }
 
+  // -------------------------
+  // LOGIN USER
+  // -------------------------
+  async loginUser(loginDto: { email: string; password: string }) {
+    const DUMMY_HASH =
+      '$2b$10$CwTycUXWue0Thq9StjUM0uJ8LrU8JkQGJ1sXb5EM2F5XJr8zY7Kx6'; // valid bcrypt hash
 
+    try {
+      const user = await this.userRepository.findOne({
+        where: { email: loginDto.email },
+        select: ['id', 'username', 'password'],
+      });
+
+      const passwordHash = user?.password ?? DUMMY_HASH;
+
+      const isValid = await bcrypt.compare(
+        loginDto.password,
+        passwordHash,
+      );
+
+      if (!user || !isValid) {
+        throw new RpcException({
+          code: 401,
+          message: 'Invalid credentials',
+        });
+      }
+      const token = this.jwtService.sign({
+        sub: user.id,
+        username: user.username,
+      }, {
+        secret: this.configService.get<string>('JWT_SECRET', 'default-secret-key'),
+        expiresIn: '1h',
+      });
+      return {
+        access_token: token
+      };
+    } catch (err) {
+      if (err instanceof RpcException) throw err;
+
+      throw new RpcException({
+        code: 500,
+        message: 'Login failed',
+      });
+    }
+  }
+
+  // -------------------------
+  // GET USER PROFILE (CACHED)
+  // -------------------------
   async getUserProfile(userId: number) {
-    const user = await this.userRepository.findOne({ where: {id:userId } });
-    if (!user) throw new Error('User not found');
-    return { id: user.id, username: user.username, email: user.email };
+    try {
+      const cacheKey = `auth:user:profile:${userId}`;
+
+      const cached = await getCache<{
+        id: number;
+        username: string;
+        email: string;
+      }>(cacheKey);
+
+      if (cached) return cached;
+
+      const user = await this.userRepository.findOne({
+        where: { id: userId },
+        select: ['id', 'username', 'email'],
+      });
+
+      if (!user) {
+        throw new RpcException({
+          code: 404,
+          message: 'User not found',
+        });
+      }
+
+      await setCache(cacheKey, user, 300);
+
+      return user;
+    } catch (err) {
+      if (err instanceof RpcException) throw err;
+
+      throw new RpcException({
+        code: 500,
+        message: 'Failed to fetch user profile',
+      });
+    }
   }
 }

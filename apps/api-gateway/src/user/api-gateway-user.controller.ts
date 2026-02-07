@@ -10,7 +10,7 @@ export class ApiGatwayUserController {
   async register(@Body() createUserDto: { username: string; email: string; password: string }) {
     
     //  Debugging
-    console.log('USER_SERVICE:', this.userService);
+    // console.log('USER_SERVICE:', this.userService);
 
     if (!this.userService) {
       throw new Error('USER_SERVICE is not initialized');
