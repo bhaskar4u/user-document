@@ -16,7 +16,7 @@ export class RmqService {
       options: {
         urls: [this.rmqUri],
         queue: this.configService.get<string>(`RABBIT_MQ_${queue}_QUEUE`, `${queue}s`),
-        noAck,
+        noAck:false,
         queueOptions: {
           durable: true, // Ensures messages persist in RabbitMQ
         },

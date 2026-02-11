@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Documents } from './documents.entity';
 import { MessagePattern } from '@nestjs/microservices';
-
+import { BaseService, BusinessError, ErrorCode } from '@app/common';
 interface UploadPayload {
   userId: number;
   filename: string;
@@ -11,33 +11,36 @@ interface UploadPayload {
 }
 
 @Injectable()
-export class DocumentsService implements OnModuleInit {
+export class DocumentsService extends BaseService implements OnModuleInit {
   constructor(
     @InjectRepository(Documents) private readonly documentRepo: Repository<Documents>,
-  ) {}
+    
+  ) {
+    super(DocumentsService.name);
+  }
  async onModuleInit() {
   console.log('DocumentsService initialized!');
   }
 
-  // @MessagePattern('user.created')
-  // handleUserCreated(data: { userId: number }) {
-  //   console.log(`User created with ID: ${data.userId}`);
-  // }
+
   @MessagePattern('document.upload')
   async uploadDocument(payload: UploadPayload) {
     console.log(`Uploading document for user ${payload.userId}`); // ✅ Added log
-  
-    const newDocument = this.documentRepo.create({
-      ownerId: payload.userId,
-      filename: payload.filename,
-      path: payload.path,
-    });
-  
-    await this.documentRepo.save(newDocument);
-  
-    console.log(`Document uploaded successfully: ${JSON.stringify(newDocument)}`);
-  
-    return { success: true, documentId: newDocument.id };
+ try {
+      const document = this.documentRepo.create({
+        ownerId: payload.userId,
+        filename: payload.filename,
+        path: payload.path,
+      });
+
+      await this.documentRepo.save(document);
+
+      return { success: true, documentId: document.id };
+
+    } catch (error) {
+      this.handleSystemError(error, 'Document upload failed');
+    }
   }
+  
   
 }

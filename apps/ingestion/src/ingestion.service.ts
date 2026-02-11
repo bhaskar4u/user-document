@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Documents } from '../../documents/src/documents.entity';
 import {IngestionWebsocket} from './ingestion.websocket'
-
+import { BaseService, BusinessError, ErrorCode } from '@app/common';
 
 enum DocumentStatus {
   PROCESSING = 'Processing',
@@ -11,48 +11,81 @@ enum DocumentStatus {
 }
 
 @Injectable()
-export class IngestionService {
+export class IngestionService extends BaseService {
   constructor(
     @InjectRepository(Documents) private readonly documentRepo: Repository<Documents>,
     private readonly ingestionWebsocket: IngestionWebsocket,
-  ) {}
+  ) {
+    super(IngestionService.name);
+  }
 
   async startIngestion(documentId: string, userId: number) {
     const docId = Number(documentId);
     if (isNaN(docId)) {
-      throw new BadRequestException('Invalid documentId');
+      throw new BusinessError(
+        'Invalid documentId',
+        ErrorCode.DOCUMENT_NOT_FOUND,
+      );
     }
   
-    const document = await this.documentRepo.findOne({
-      where: { id: docId },
-      select: ['id', 'status'],
-    });
-  
-    if (!document) {
-      throw new NotFoundException('Document not found');
+   try {
+      const document = await this.documentRepo.findOne({
+        where: { id: docId },
+        select: ['id', 'status'],
+      });
+
+      if (!document) {
+        throw new BusinessError(
+          'Document not found',
+          ErrorCode.DOCUMENT_NOT_FOUND,
+        );
+      }
+
+      await this.documentRepo.update(docId, {
+        status: DocumentStatus.PROCESSING,
+      });
+
+      this.ingestionWebsocket.sendUpdate(documentId, 'Processing');
+
+      setTimeout(async () => {
+        await this.documentRepo.update(docId, {
+          status: DocumentStatus.COMPLETED,
+        });
+        this.ingestionWebsocket.sendUpdate(documentId, 'Completed');
+      }, 5000);
+
+      return {
+        message: 'Ingestion started',
+        documentId: docId,
+        status: DocumentStatus.PROCESSING,
+      };
+
+    } catch (error) {
+      if (error instanceof BusinessError) throw error;
+      this.handleSystemError(error, 'Ingestion failed');
     }
-  
-    await this.documentRepo.update(docId, { status: DocumentStatus.PROCESSING });
-     this.ingestionWebsocket.sendUpdate(documentId, 'Processing');
-  
-    setTimeout(async () => {
-      await this.documentRepo.update(docId, { status: DocumentStatus.COMPLETED });
-      this.ingestionWebsocket.sendUpdate(documentId, 'Completed');
-    }, 5000);
-  
-    return { message: 'Ingestion started', documentId: docId, status: DocumentStatus.PROCESSING };
   }
 
   async getStatus(documentId: number) {
-    const document = await this.documentRepo.findOne({
-      where: { id: documentId },
-      select: ['id', 'status'],
-    });
+   try {
+      const document = await this.documentRepo.findOne({
+        where: { id: documentId },
+        select: ['id', 'status'],
+      });
 
-    if (!document) {
-      throw new NotFoundException('Document not found');
+      if (!document) {
+        throw new BusinessError(
+          'Document not found',
+          ErrorCode.DOCUMENT_NOT_FOUND,
+        );
+      }
+
+      return { documentId: document.id, status: document.status };
+
+    } catch (error) {
+      if (error instanceof BusinessError) throw error;
+      this.handleSystemError(error, 'Failed to fetch ingestion status');
     }
-
-    return { documentId: document.id, status: document.status };
   }
+  
 }

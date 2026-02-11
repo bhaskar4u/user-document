@@ -4,3 +4,11 @@ export * from './rmq/rmq.service';
 
 
 
+export * from '../errors';
+export * from '../filters';
+export * from '../utils';
+
+export * from '../base';
+
+export * from './rpc';
+export * from './http';

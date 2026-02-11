@@ -7,14 +7,19 @@ import { User } from './user.entity';
 import { getCache, setCache } from '@app/common/redis/cache';
 import { RpcException } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
+import { BaseService, BusinessError, SystemError, ErrorCode } from '@app/common';
+import { error } from 'console';
+
 @Injectable()
-export class UserService {
+export class UserService extends BaseService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
     private configService: ConfigService,
-  ) {}
+  ) {
+    super(UserService.name);
+  }
 
   // -------------------------
   // CREATE USER
@@ -27,10 +32,10 @@ export class UserService {
       });
 
       if (existing) {
-        throw new RpcException({
-          code: 409,
-          message: 'User already exists',
-        });
+        throw new BusinessError(
+          'User already exists',
+          ErrorCode.USER_ALREADY_EXISTS,
+        );
       }
 
       const hashedPassword = await bcrypt.hash(dto.password, 10);
@@ -45,14 +50,10 @@ export class UserService {
 
       return { message: 'User created successfully' };
     } catch (err) {
-      if (err instanceof RpcException) throw err;
-
-      throw new RpcException({
-        code: 500,
-        message: 'Failed to create user',
-      });
+      if (err instanceof BusinessError) throw err;
+      this.handleSystemError(err, 'Failed to create user');
     }
-  }
+    }
 
   // -------------------------
   // LOGIN USER
@@ -75,10 +76,10 @@ export class UserService {
       );
 
       if (!user || !isValid) {
-        throw new RpcException({
-          code: 401,
-          message: 'Invalid credentials',
-        });
+        throw new BusinessError(
+          'Invalid credentials',
+          ErrorCode.AUTH_INVALID_CREDENTIALS,
+        );
       }
       const token = this.jwtService.sign({
         sub: user.id,
@@ -91,14 +92,11 @@ export class UserService {
         access_token: token
       };
     } catch (err) {
-      if (err instanceof RpcException) throw err;
-
-      throw new RpcException({
-        code: 500,
-        message: 'Login failed',
-      });
+      if (err instanceof BusinessError) throw err;
+      this.handleSystemError(err, 'Login failed');
     }
-  }
+    }
+  
 
   // -------------------------
   // GET USER PROFILE (CACHED)
@@ -121,22 +119,20 @@ export class UserService {
       });
 
       if (!user) {
-        throw new RpcException({
-          code: 404,
-          message: 'User not found',
-        });
+        throw new BusinessError(
+          'User not found',
+          ErrorCode.USER_NOT_FOUND,
+        );
       }
 
       await setCache(cacheKey, user, 300);
 
       return user;
     } catch (err) {
-      if (err instanceof RpcException) throw err;
-
-      throw new RpcException({
-        code: 500,
-        message: 'Failed to fetch user profile',
-      });
+      if (err instanceof BusinessError) throw err;
+      this.handleSystemError(err, 'Failed to fetch user profile');
     }
-  }
+  
+    }
+  
 }
