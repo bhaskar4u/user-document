@@ -26,51 +26,60 @@ pipeline {
     }
 
     /* ---------------- TEST ---------------- */
-    stage('Test') {
+    stage('Install & Unit Test') {
       steps {
-        bat 'npm ci'
-        bat 'npm run test'
+        bat 'node -v'
+        bat 'npm -v'
+        bat 'corepack enable'
+        bat 'pnpm --version'
+        bat 'pnpm install --frozen-lockfile'
+        bat 'pnpm run test'
       }
     }
 
     /* ---------------- PREPARE ENV ---------------- */
-    stage('Prepare Env (Conditional)') {
-  steps {
-    bat '''
-      if exist apps\\.env (
-        echo Using existing .env
-      ) else (
-        echo ERROR: apps\\.env not found
-        exit /b 1
-      )
-    '''
-  }
-}
+    stage('Prepare Env') {
+      steps {
+        bat '''
+          if exist apps\\.env (
+            echo Using existing .env
+          ) else (
+            echo ERROR: apps\\.env not found
+            exit /b 1
+          )
+        '''
+      }
+    }
+
     stage('Verify Env') {
-  steps {
-    bat '''
-      if not exist apps\\.env (
-        echo ERROR: .env missing
-        exit /b 1
-      )
-      for /f "usebackq delims==" %%A in (`findstr /R "=" apps\\.env`) do (
-        echo ENV OK
-        goto :done
-      )
-      echo ERROR: .env is empty
-      exit /b 1
-      :done
-    '''
-  }
-}
+      steps {
+        bat '''
+          if not exist apps\\.env (
+            echo ERROR: .env missing
+            exit /b 1
+          )
 
+          for /f "usebackq delims==" %%A in (`findstr /R "=" apps\\.env`) do (
+            echo ENV OK
+            goto :done
+          )
+
+          echo ERROR: .env is empty
+          exit /b 1
+
+          :done
+        '''
+      }
+    }
+
+    /* ---------------- DEBUG ---------------- */
     stage('Debug Compose Files') {
-  steps {
-    bat 'dir'
-  }
-}
+      steps {
+        bat 'dir'
+      }
+    }
 
-    /* ---------------- BUILD (ALWAYS) ---------------- */
+    /* ---------------- BUILD ---------------- */
     stage('Build Images') {
       steps {
         bat 'docker compose build'
@@ -78,7 +87,7 @@ pipeline {
     }
 
     /* ---------------- PUSH (CI ONLY) ---------------- */
-    stage('Push Images (CI only)') {
+    stage('Push Images') {
       when {
         expression { params.ENV == 'ci' }
       }
@@ -90,6 +99,7 @@ pipeline {
             passwordVariable: 'DOCKERHUB_PASS'
           )
         ]) {
+
           bat 'echo %DOCKERHUB_PASS% | docker login -u %DOCKERHUB_USER% --password-stdin'
 
           bat '''
@@ -110,9 +120,11 @@ pipeline {
     /* ---------------- DEPLOY ---------------- */
     stage('Deploy') {
       steps {
-        bat 'docker compose up -d'
+        bat 'docker compose down'
+        bat 'docker compose up -d --remove-orphans'
       }
     }
+
   }
 
   post {
