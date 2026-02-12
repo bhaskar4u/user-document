@@ -31,6 +31,7 @@ pipeline {
         bat 'node -v'
         bat 'npm -v'
         bat 'corepack enable'
+        bat 'npm install -g pnpm'
         bat 'pnpm --version'
         bat 'pnpm install --frozen-lockfile'
         bat 'pnpm run test'
