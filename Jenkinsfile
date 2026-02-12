@@ -29,7 +29,6 @@ pipeline {
     stage('Install & Unit Test') {
       steps {
         bat 'node -v'
-        bat 'npm -v'
         bat 'corepack enable'
         bat 'npm install -g pnpm'
         bat 'pnpm --version'
