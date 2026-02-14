@@ -4,8 +4,8 @@ services:
   auth:
     build:
       context: .
-      dockerfile: apps/auth/Dockerfile
-      target: development
+      args:
+        SERVICE_NAME: auth
     command: npm run start:dev auth
     env_file:
       - apps/.env
@@ -32,8 +32,8 @@ services:
   documents:
     build:
       context: .
-      dockerfile: apps/documents/Dockerfile
-      target: development
+      args:
+        SERVICE_NAME: documents
     command: npm run start:dev documents
     env_file:
       - apps/.env
@@ -53,8 +53,8 @@ services:
   ingestion:
     build:
       context: .
-      dockerfile: apps/ingestion/Dockerfile
-      target: development
+      args:
+        SERVICE_NAME: ingestion
     command: npm run start:dev ingestion
     env_file:
       - apps/.env
@@ -74,8 +74,8 @@ services:
   api-gateway:
     build:
       context: .
-      dockerfile: apps/api-gateway/Dockerfile
-      target: development
+      args:
+        SERVICE_NAME: api-gateway
     command: npm run start:dev api-gateway
     env_file:
       - apps/.env
