@@ -1,16 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DocumentController } from './documents.controller';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Documents } from './documents.entity';
-import { Repository } from 'typeorm';
+import { DocumentsService } from './documents.service';
 
 describe('DocumentController', () => {
   let controller: DocumentController;
-  let documentRepository: Repository<Documents>;
 
-  const mockDocumentRepository = {
-    create: jest.fn(),
-    save: jest.fn(),
+  const mockDocumentsService = {
+    uploadDocument: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -18,18 +14,17 @@ describe('DocumentController', () => {
       controllers: [DocumentController],
       providers: [
         {
-          provide: getRepositoryToken(Documents),
-          useValue: mockDocumentRepository,
+          provide: DocumentsService,
+          useValue: mockDocumentsService,
         },
       ],
     }).compile();
 
     controller = module.get<DocumentController>(DocumentController);
-    documentRepository = module.get<Repository<Documents>>(getRepositoryToken(Documents));
+  });
 
-    // ✅ Ensure console.log is mocked before calling the method
+  afterEach(() => {
     jest.clearAllMocks();
-    jest.spyOn(console, 'log').mockImplementation(() => {});
   });
 
   it('should be defined', () => {
@@ -43,39 +38,19 @@ describe('DocumentController', () => {
       path: '/uploads/test.pdf',
     };
 
-    const mockDocument = {
-      id: 100,
-      ownerId: payload.userId,
-      filename: payload.filename,
-      path: payload.path,
-    };
-
-    // ✅ Ensure create and save methods return expected values
-    mockDocumentRepository.create.mockReturnValue(mockDocument);
-    mockDocumentRepository.save.mockResolvedValue(mockDocument);
-
-    // ✅ Call the controller method
-    const result = await controller.handleDocumentUpload(payload);
-
-    // ✅ Ensure repository methods were called correctly
-    expect(mockDocumentRepository.create).toHaveBeenCalledWith({
-      ownerId: payload.userId,
-      filename: payload.filename,
-      path: payload.path,
+    mockDocumentsService.uploadDocument.mockResolvedValue({
+      success: true,
+      documentId: 100,
     });
 
-    expect(mockDocumentRepository.save).toHaveBeenCalledWith(mockDocument);
-    expect(result).toEqual({ success: true, documentId: mockDocument.id });
+    const result = await controller.uploadDocument(payload);
 
-    // ✅ Debugging: Log all captured console messages
-    // console.log('Captured Logs:', (console.log as jest.Mock).mock.calls);
+    expect(mockDocumentsService.uploadDocument)
+      .toHaveBeenCalledWith(payload);
 
-    // ✅ Fix log validation by checking order and count explicitly
-    // expect(console.log).toHaveBeenCalledTimes(2);
-    // expect(console.log).toHaveBeenNthCalledWith(1, `Uploading document for user ${payload.userId}`);
-    // expect(console.log).toHaveBeenNthCalledWith(2, `Document uploaded successfully: ${JSON.stringify(mockDocument)}`);
-
-    // ✅ Restore console.log after test
-    jest.restoreAllMocks();
+    expect(result).toEqual({
+      success: true,
+      documentId: 100,
+    });
   });
 });

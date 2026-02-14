@@ -10,7 +10,7 @@ export class DocumentController {
     private readonly documentService: DocumentsService) {}
 
   @MessagePattern('document.upload')
-  async handleDocumentUpload(
+  async uploadDocument(
     @Payload() payload: { userId: number; filename: string; path: string },
   ) {
     return this.documentService.uploadDocument(payload);

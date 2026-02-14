@@ -6,7 +6,7 @@ export class IngestionWebsocket  {
   @WebSocketServer()
   server: Server;
 
-  sendUpdate(documentId: string, status: string) {
+  sendUpdate(documentId: number, status: string) {
     this.server.emit(`ingestion_status_${documentId}`, { documentId, status });
   }
 }

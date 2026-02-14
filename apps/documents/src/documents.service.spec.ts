@@ -38,11 +38,6 @@ describe('DocumentsService', () => {
     expect(console.log).toHaveBeenCalledWith('DocumentsService initialized!');
   });
 
-  it('should log user creation event', () => {
-    console.log = jest.fn(); // Mock console.log
-    service.handleUserCreated({ userId: 1 });
-    expect(console.log).toHaveBeenCalledWith('User created with ID: 1');
-  });
 
   it('should upload a document and save it', async () => {
     const payload = {

@@ -39,27 +39,35 @@ describe('ApiGatewayIngestionController', () => {
   describe('startIngestion', () => {
     it('should send ingestion start request to the service', async () => {
       const mockRequest = { user: { id: 1 } }; // Mock authenticated user
-      const mockBody = { documentId: '123' };
+      const mockBody = { documentId: 123 };
 
       mockIngestionService.send.mockResolvedValue({ message: 'Ingestion started', documentId: 123 });
 
       const result = await controller.startIngestion(mockBody, mockRequest);
 
-      expect(ingestionService.send).toHaveBeenCalledWith('ingestion.start', { userId: 1, documentId: '123' });
+      expect(ingestionService.send).toHaveBeenCalledWith('ingestion.start', { userId: 1, documentId: 123 });
       expect(result).toEqual({ message: 'Ingestion started', documentId: 123 });
     });
   });
 
   describe('getIngestionStatus', () => {
     it('should send ingestion status request to the service', async () => {
-      const documentId = '123';
+      const documentId = 123;
 
       mockIngestionService.send.mockResolvedValue({ documentId: 123, status: 'Processing' });
 
       const result = await controller.getIngestionStatus(documentId);
 
-      expect(ingestionService.send).toHaveBeenCalledWith('ingestion.status', { documentId });
-      expect(result).toEqual({ documentId: 123, status: 'Processing' });
+      expect(ingestionService.send).toHaveBeenNthCalledWith(
+        2,
+        'ingestion.status',
+        { documentId: 123 }
+      );
+
+      expect(result).toEqual({
+        documentId: 123,
+        status: 'Processing',
+      });
     });
   });
 });

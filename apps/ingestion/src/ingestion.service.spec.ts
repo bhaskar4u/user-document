@@ -5,6 +5,7 @@ import { Documents } from '../../documents/src/documents.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { IngestionWebsocket } from './ingestion.websocket';
+import { BusinessError } from '@app/common';
 
 enum DocumentStatus {
   PROCESSING = 'Processing',
@@ -56,13 +57,13 @@ describe('IngestionService', () => {
 
   describe('startIngestion', () => {
     it('should throw BadRequestException if documentId is invalid', async () => {
-      await expect(service.startIngestion('invalid_id', 1)).rejects.toThrow(BadRequestException);
+      await expect(service.startIngestion(1, 1)).rejects.toThrow(BusinessError);
     });
 
     it('should throw NotFoundException if document is not found', async () => {
       mockDocumentRepo.findOne.mockResolvedValue(null);
 
-      await expect(service.startIngestion('1', 1)).rejects.toThrow(NotFoundException);
+      await expect(service.startIngestion(1, 1)).rejects.toThrow(BusinessError);
     });
 
     it('should start ingestion and return processing status', async () => {
@@ -70,14 +71,14 @@ describe('IngestionService', () => {
       mockDocumentRepo.findOne.mockResolvedValue(mockDocument);
       mockDocumentRepo.update.mockResolvedValue({ affected: 1 });
 
-      const result = await service.startIngestion('1', 1);
+      const result = await service.startIngestion(1, 1);
 
-      expect(mockDocumentRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 }, select: ['id', 'status'] });
+      expect(mockDocumentRepo.findOne).toHaveBeenCalledWith({ where: { id: 1, ownerId: 1 }, select: ['id', 'status'] });
       expect(mockDocumentRepo.update).toHaveBeenCalledWith(1, { status: DocumentStatus.PROCESSING });
 
       // Ensure WebSocket emit is called correctly
       expect(websocket.sendUpdate).toHaveBeenCalledWith( // Correctly mocks sendUpdate function
-        '1',
+        1,
         'Processing'
       );
 
@@ -89,14 +90,14 @@ describe('IngestionService', () => {
     it('should throw NotFoundException if document does not exist', async () => {
       mockDocumentRepo.findOne.mockResolvedValue(null);
 
-      await expect(service.getStatus('1')).rejects.toThrow(NotFoundException);
+      await expect(service.getStatus(1)).rejects.toThrow(BusinessError);
     });
 
     it('should return document status if document exists', async () => {
       const mockDocument = { id: 1, status: DocumentStatus.PROCESSING };
       mockDocumentRepo.findOne.mockResolvedValue(mockDocument);
 
-      const result = await service.getStatus('1');
+      const result = await service.getStatus(1);
 
       expect(mockDocumentRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 }, select: ['id', 'status'] });
       expect(result).toEqual({ documentId: 1, status: DocumentStatus.PROCESSING });

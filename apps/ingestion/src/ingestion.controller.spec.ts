@@ -33,8 +33,8 @@ describe('IngestionController', () => {
 
   describe('startIngestions', () => {
     it('should start ingestion successfully', async () => {
-      const payload = { documentId: 'doc123', userId: 1 };
-      const expectedResponse = { message: 'Ingestion started', documentId: 'doc123', status: 'Processing' };
+      const payload = { documentId: 1, userId: 1 };
+      const expectedResponse = { message: 'Ingestion started', documentId: 1, status: 'Processing' };
 
       mockIngestionService.startIngestion.mockResolvedValue(expectedResponse);
 
@@ -47,12 +47,12 @@ describe('IngestionController', () => {
 
   describe('getIngestionStatus', () => {
     it('should return ingestion status', async () => {
-      const documentId = 'doc123';
+      const documentId = 1;
       const expectedStatus = { documentId, status: 'Processing' };
 
       mockIngestionService.getStatus.mockResolvedValue(expectedStatus);
 
-      const result = await controller.getIngestionStatus(documentId);
+      const result = await controller.getIngestionStatus({documentId});
 
       expect(mockIngestionService.getStatus).toHaveBeenCalledWith(documentId);
       expect(result).toEqual(expectedStatus);

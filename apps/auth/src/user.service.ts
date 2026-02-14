@@ -4,11 +4,9 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { User } from './user.entity';
-import { getCache, setCache } from '@app/common/redis/cache';
-import { RpcException } from '@nestjs/microservices';
+import { getCache, setCache } from '@app/common'; 
 import { ConfigService } from '@nestjs/config';
 import { BaseService, BusinessError, SystemError, ErrorCode } from '@app/common';
-import { error } from 'console';
 
 @Injectable()
 export class UserService extends BaseService {

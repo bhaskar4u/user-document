@@ -10,15 +10,15 @@ export class ApiGatewayIngestionController {
 
   @Post('start')
   @UseGuards(JwtAuthGuard)
-  async startIngestion(@Body() data: { documentId: string }, @Request() req) {
+  async startIngestion(@Body() data: { documentId: number }, @Request() req) {
     const ingestionData = { userId: req.user.id, documentId: data.documentId };
     return this.ingestionService.send('ingestion.start', ingestionData);
   }
 
   @Get('status/:documentId')
   @UseGuards(JwtAuthGuard)
-  async getIngestionStatus(@Param('documentId') documentId: string) {    
-    return this.ingestionService.send('ingestion.status', { documentId: Number(documentId) } );
+  async getIngestionStatus(@Param('documentId') documentId: number) {    
+    return this.ingestionService.send('ingestion.status', { documentId } );
   }
 }
  
