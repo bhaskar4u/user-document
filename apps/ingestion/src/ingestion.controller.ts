@@ -17,7 +17,7 @@ export class IngestionController {
   @MessagePattern('ingestion.status')
   async getIngestionStatus(@Payload() data: { documentId: number }) {    
     try {
-    return await this.ingestionService.getStatus(data.documentId);
+    return await this.ingestionService.getStatus(Number(data.documentId));
   } catch (err) {
     return {
       error: true,

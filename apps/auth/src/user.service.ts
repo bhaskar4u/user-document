@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { User } from './user.entity';
-import { getCache, setCache } from '@app/common'; 
+import { getCache, setCache } from '@app/common';
 import { ConfigService } from '@nestjs/config';
 import { BaseService, BusinessError, SystemError, ErrorCode } from '@app/common';
 
