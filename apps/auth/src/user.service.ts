@@ -4,9 +4,10 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { User } from './user.entity';
-import { getCache, setCache } from '@app/common';
+import { delCache, getCache, setCache } from '@app/common';
 import { ConfigService } from '@nestjs/config';
 import { BaseService, BusinessError, SystemError, ErrorCode } from '@app/common';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class UserService extends BaseService {
@@ -45,8 +46,8 @@ export class UserService extends BaseService {
       });
 
       await this.userRepository.save(user);
-
       return { message: 'User created successfully' };
+
     } catch (err) {
       if (err instanceof BusinessError) throw err;
       this.handleSystemError(err, 'Failed to create user');
@@ -79,15 +80,22 @@ export class UserService extends BaseService {
           ErrorCode.AUTH_INVALID_CREDENTIALS,
         );
       }
+      const expiresInSeconds = 3600;
+      const jti = randomUUID();
+
       const token = this.jwtService.sign({
         sub: user.id,
         username: user.username,
+        jti: jti,
       }, {
         secret: this.configService.get<string>('JWT_SECRET', 'default-secret-key'),
-        expiresIn: '1h',
+        expiresIn: expiresInSeconds,
       });
+
+      await setCache(`auth:token:${user.id}`, token, expiresInSeconds);
       return {
-        access_token: token
+        access_token: token,
+        expires_in: expiresInSeconds,
       };
     } catch (err) {
       if (err instanceof BusinessError) throw err;
@@ -95,7 +103,16 @@ export class UserService extends BaseService {
     }
     }
   
-
+  
+  // -------------------------
+  // LOGOUT USER
+  // -------------------------
+  async logout(userId: number) {
+    await delCache(`auth:token:${userId}`);
+    return { message: 'Logged out successfully' };
+  }
+  
+  
   // -------------------------
   // GET USER PROFILE (CACHED)
   // -------------------------

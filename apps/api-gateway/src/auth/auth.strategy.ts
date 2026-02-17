@@ -1,20 +1,46 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
+import { getCache } from '@app/common/redis/cache';
 
+interface JwtPayload {
+  sub: number;
+  email: string;
+  iat: number;
+  exp: number;
+}
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private configService: ConfigService) {
+  constructor(private readonly configService: ConfigService) {
+    const secret = configService.get<string>('JWT_SECRET');
+
+    if (!secret) {
+      throw new Error('JWT_SECRET is not defined in environment');
+    }
+
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>('JWT_SECRET') || 'my_secret_key',
+      secretOrKey: secret,
     });
   }
 
-  async validate(payload: { sub: number; email: string }) {
-    return { id: payload.sub, email: payload.email };
+  async validate(payload: JwtPayload) {
+    // 🔥 Redis session validation
+    const storedToken = await getCache<string>(
+      `auth:token:${payload.sub}`,
+    );
+
+    if (!storedToken) {
+      throw new UnauthorizedException('Session expired');
+    }
+
+    // Attach clean user object to req.user
+    return {
+      id: payload.sub,
+      email: payload.email,
+    };
   }
 }
