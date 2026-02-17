@@ -52,7 +52,7 @@ describe('ApiGatwayUserController', () => {
   describe('login', () => {
     it('should send login request', async () => {
       const mockLoginDto = { email: 'john@example.com', password: 'securepassword' };
-      const mockResponse = { access_token: 'jwt_token' };
+      const mockResponse = { access_token: 'jwt_token', expires_in: 3600 };
 
       mockUserService.send.mockResolvedValue(mockResponse);
 

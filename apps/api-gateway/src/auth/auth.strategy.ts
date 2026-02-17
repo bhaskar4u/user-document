@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
-import { getCache } from '@app/common/redis/cache';
+import { getCache } from '@app/common';
 
 interface JwtPayload {
   sub: number;

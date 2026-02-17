@@ -64,7 +64,7 @@ describe('UserService', () => {
 
       const result = await userService.loginUser({ email: 'john@example.com', password: 'password123' });
 
-      expect(result).toEqual({ access_token: 'mockJwtToken' });
+      expect(result).toEqual({ access_token: 'mockJwtToken', expires_in: 3600 });
     });
 
     it('should throw an error if credentials are invalid', async () => {
