@@ -16,6 +16,8 @@ export const RpcStatusMap: Record<string, number> = {
   // System
   [ErrorCode.DATABASE_ERROR]: 500,
   [ErrorCode.REDIS_ERROR]: 500,
-  [ErrorCode.RABBITMQ_ERROR]: 500,
+  [ErrorCode.RABBITMQ_PUBLISH_FAILED]: 500,
+  [ErrorCode.RABBITMQ_CONNECTION_ERROR]: 500,
+  [ErrorCode.RABBITMQ_CONSUME_ERROR]: 500,
   [ErrorCode.INTERNAL_ERROR]: 500,
 };

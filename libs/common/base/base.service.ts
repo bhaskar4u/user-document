@@ -9,7 +9,10 @@ export abstract class BaseService {
   }
 
   protected handleSystemError(error: unknown, message: string): never {
-    this.logger.error(message, error);
+    this.logger.error(
+    message,
+    error instanceof Error ? error.stack : undefined,
+  );
 
     throw new SystemError(
       message,
