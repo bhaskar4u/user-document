@@ -1,12 +1,23 @@
+// 🔥 MUST BE FIRST
+jest.mock('@app/common', () => {
+  const actual = jest.requireActual('@app/common');
+
+  return {
+    ...actual,
+    setCache: jest.fn().mockResolvedValue(undefined),
+    getCache: jest.fn().mockResolvedValue(null),
+    delCache: jest.fn().mockResolvedValue(undefined),
+  };
+});
+
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
 import { Repository } from 'typeorm';
-import { User,UserRole } from './user.entity';
+import { User, UserRole } from './user.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
-
 
 const mockUserRepository = () => ({
   findOne: jest.fn(),
@@ -16,8 +27,6 @@ const mockUserRepository = () => ({
 describe('UserService', () => {
   let userService: UserService;
   let userRepository: jest.Mocked<Repository<User>>;
-  let jwtService: JwtService;
-  let configService: ConfigService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -40,8 +49,6 @@ describe('UserService', () => {
 
     userService = module.get<UserService>(UserService);
     userRepository = module.get(getRepositoryToken(User));
-    jwtService = module.get<JwtService>(JwtService);
-    configService = module.get<ConfigService>(ConfigService);
   });
 
   it('should be defined', () => {
@@ -55,21 +62,33 @@ describe('UserService', () => {
         username: 'JohnDoe',
         email: 'john@example.com',
         password: 'hashedPassword',
-        role: UserRole.VIEWER, // ✅ Add role
-        createdAt: new Date(), // ✅ Add createdAt
+        role: UserRole.VIEWER,
+        createdAt: new Date(),
       };
 
-      userRepository.findOne.mockResolvedValue(mockUser);
+      userRepository.findOne.mockResolvedValue(mockUser as any);
       jest.spyOn(bcrypt, 'compare').mockResolvedValue(true as never);
 
-      const result = await userService.loginUser({ email: 'john@example.com', password: 'password123' });
+      const result = await userService.loginUser({
+        email: 'john@example.com',
+        password: 'password123',
+      });
 
-      expect(result).toEqual({ access_token: 'mockJwtToken', expires_in: 3600 });
+      expect(result).toEqual({
+        access_token: 'mockJwtToken',
+        expires_in: 3600,
+      });
     });
 
     it('should throw an error if credentials are invalid', async () => {
       userRepository.findOne.mockResolvedValue(null);
-      await expect(userService.loginUser({ email: 'john@example.com', password: 'password123' })).rejects.toThrow('Invalid credentials');
+
+      await expect(
+        userService.loginUser({
+          email: 'john@example.com',
+          password: 'password123',
+        }),
+      ).rejects.toThrow('Invalid credentials');
     });
   });
 });

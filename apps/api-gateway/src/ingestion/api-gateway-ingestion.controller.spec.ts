@@ -58,16 +58,18 @@ describe('ApiGatewayIngestionController', () => {
 
       const result = await controller.getIngestionStatus(documentId);
 
-      expect(ingestionService.send).toHaveBeenNthCalledWith(
-        2,
-        'ingestion.status',
-        { documentId: 123 }
-      );
+     expect(ingestionService.send).toHaveBeenCalledTimes(1);
 
-      expect(result).toEqual({
-        documentId: 123,
-        status: 'Processing',
-      });
+expect(ingestionService.send).toHaveBeenCalledWith(
+  'ingestion.status',
+  { documentId: 123 }
+);
+
+expect(result).toEqual({
+  documentId: 123,
+  status: 'Processing',
+});
+
     });
   });
 });
