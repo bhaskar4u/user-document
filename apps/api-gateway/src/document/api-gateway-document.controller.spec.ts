@@ -17,7 +17,7 @@ describe('ApiGatewayDocumentController', () => {
       controllers: [ApiGatewayDocumentController],
       providers: [
         {
-          provide: 'DOCUMENT_SERVICE',
+          provide: 'document',
           useValue: mockDocumentService,
         },
       ],
@@ -29,7 +29,7 @@ describe('ApiGatewayDocumentController', () => {
       .compile();
 
     controller = module.get<ApiGatewayDocumentController>(ApiGatewayDocumentController);
-    documentService = module.get<ClientProxy>('DOCUMENT_SERVICE');
+    documentService = module.get<ClientProxy>('document');
   });
 
   it('should be defined', () => {

@@ -17,7 +17,7 @@ describe('ApiGatewayIngestionController', () => {
       controllers: [ApiGatewayIngestionController],
       providers: [
         {
-          provide: 'INGESTION_SERVICE',
+          provide: 'ingestion', // Ensure this matches your injection token
           useValue: mockIngestionService,
         },
       ],
@@ -29,7 +29,7 @@ describe('ApiGatewayIngestionController', () => {
       .compile();
 
     controller = module.get<ApiGatewayIngestionController>(ApiGatewayIngestionController);
-    ingestionService = module.get<ClientProxy>('INGESTION_SERVICE');
+    ingestionService = module.get<ClientProxy>('ingestion');
   });
 
   it('should be defined', () => {

@@ -8,7 +8,7 @@ async function bootstrap() {
   const appContext = await NestFactory.createMicroservice(IngestionModule);
     const rmqService = appContext.get(RmqService);
 
-  const app = await NestFactory.createMicroservice(IngestionModule, rmqService.getOptions('INGESTION_SERVICE'));
+  const app = await NestFactory.createMicroservice(IngestionModule, rmqService.getOptions('ingestion'));
     app.useGlobalFilters(
     new GlobalRpcExceptionFilter(),
   );

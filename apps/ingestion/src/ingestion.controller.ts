@@ -5,7 +5,7 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 
 @Controller()
 export class IngestionController {
-  constructor(@Inject('INGESTION_SERVICE') private readonly ingestionService: IngestionService) {}
+  constructor(@Inject('ingestion') private readonly ingestionService: IngestionService) {}
 
   @MessagePattern('ingestion.start')
   async startIngestions(@Payload() data: { documentId: any; userId: number }): Promise<{ message: string; documentId: any; status: string }> {

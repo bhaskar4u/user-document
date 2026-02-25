@@ -12,7 +12,7 @@ import { IngestionWebsocket } from './ingestion.websocket';
   imports: [
     TypeOrmModule.forFeature([Documents]),
     ConfigModule.forRoot({ isGlobal: true }),
-    RmqModule.register({ name: 'INGESTION_SERVICE' }),
+    RmqModule.register({ name: 'ingestion' }),
     DocumentsModule,
   ],
   controllers: [IngestionController,],
@@ -20,7 +20,7 @@ import { IngestionWebsocket } from './ingestion.websocket';
     IngestionService,
     IngestionWebsocket,
     {
-      provide: 'INGESTION_SERVICE', // Ensure this matches your injection token
+      provide: 'ingestion', // Ensure this matches your injection token
       useExisting: IngestionService,
     },
   ],

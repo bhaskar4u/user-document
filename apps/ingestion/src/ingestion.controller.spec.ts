@@ -17,14 +17,14 @@ describe('IngestionController', () => {
       controllers: [IngestionController],
       providers: [
         {
-          provide: 'INGESTION_SERVICE',
+          provide: 'ingestion',
           useValue: mockIngestionService,
         },
       ],
     }).compile();
 
     controller = module.get<IngestionController>(IngestionController);
-    ingestionService = module.get<IngestionService>('INGESTION_SERVICE');
+    ingestionService = module.get<IngestionService>('ingestion');
   });
 
   it('should be defined', () => {

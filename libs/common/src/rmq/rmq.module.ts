@@ -28,7 +28,7 @@ export class RmqModule {
                 urls: [
                   `amqp://${configService.get<string>('RABBITMQ_DEFAULT_USER')}:${configService.get<string>('RABBITMQ_DEFAULT_PASS')}@${configService.get<string>('RABBITMQ_HOST')}:${configService.get<number>('RABBITMQ_PORT')}`,
                 ],
-                queue: `${name}s`,
+                queue: `${name}`,
                 queueOptions: { durable: true },
               },
             }),

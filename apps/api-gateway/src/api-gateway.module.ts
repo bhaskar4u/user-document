@@ -18,11 +18,9 @@ import { AuthModule } from './auth/auth.module';
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     AuthModule,
-    IngestionModule,
-    DocumentsModule,
-    RmqModule.register({ name: 'USER_SERVICE' }), // ✅ Ensure correct name
-    RmqModule.register({ name: 'DOCUMENT_SERVICE' }), // ✅ Ensure correct name
-    RmqModule.register({ name: 'INGESTION_SERVICE' })
+    RmqModule.register({ name: 'user' }), // ✅ Ensure correct name
+    RmqModule.register({ name: 'document' }), // ✅ Ensure correct name
+    RmqModule.register({ name: 'ingestion' })
   ],
   controllers: [ApiGatwayUserController, ApiGatewayDocumentController,ApiGatewayController,ApiGatewayIngestionController,HealthcheckController],
   providers:[ApiGatewayService]

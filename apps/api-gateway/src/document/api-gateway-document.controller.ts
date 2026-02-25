@@ -9,7 +9,7 @@ import { AuthGuard } from '@nestjs/passport';
 
 @Controller('documents')
 export class ApiGatewayDocumentController {
-  constructor(@Inject('DOCUMENT_SERVICE') private readonly documentService: ClientProxy) {}
+  constructor(@Inject('document') private readonly documentService: ClientProxy) {}
 
   @Post('upload')
   @UseGuards(AuthGuard('jwt'))

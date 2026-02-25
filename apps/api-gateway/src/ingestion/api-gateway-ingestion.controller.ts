@@ -6,7 +6,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('ingestion')
 export class ApiGatewayIngestionController {
-  constructor(@Inject('INGESTION_SERVICE') private readonly ingestionService: ClientProxy) {}
+  constructor(@Inject('ingestion') private readonly ingestionService: ClientProxy) {}
 
   @Post('start')
   @UseGuards(JwtAuthGuard)
