@@ -24,19 +24,7 @@ pipeline {
             url: 'https://github.com/bhaskar4u/user-document.git'
       }
     }
-
-    /* ---------------- TEST ---------------- */
-    stage('Install & Unit Test') {
-      steps {
-        bat 'node -v'
-        bat 'corepack enable'
-        bat 'npm install -g pnpm'
-        bat 'pnpm --version'
-        bat 'pnpm install --frozen-lockfile'
-        bat 'pnpm run test'
-      }
-    }
-
+    
     /* ---------------- PREPARE ENV ---------------- */
     stage('Prepare Env') {
       steps {
@@ -71,7 +59,17 @@ pipeline {
         '''
       }
     }
-
+    /* ---------------- TEST ---------------- */
+    stage('Install & Unit Test') {
+      steps {
+        bat 'node -v'
+        bat 'corepack enable'
+        bat 'npm install -g pnpm'
+        bat 'pnpm --version'
+        bat 'pnpm install --frozen-lockfile'
+        bat 'pnpm run test'
+      }
+    }
     /* ---------------- DEBUG ---------------- */
     stage('Debug Compose Files') {
       steps {
