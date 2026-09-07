@@ -55,6 +55,7 @@ export enum ErrorCode {
 
   // Redis caching failure (non-critical, degradable)
   REDIS_ERROR = 'REDIS_ERROR',
+  TOO_MANY_REQUESTS = 'TOO_MANY_REQUESTS',
 
 
   // =====================================================

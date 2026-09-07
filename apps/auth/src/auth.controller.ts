@@ -1,13 +1,13 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload, Ctx, RmqContext } from '@nestjs/microservices';
-import { UserService } from './user.service';
+import { AuthService } from './auth.service';
 
 @Controller()
-export class UserController {
-  constructor(private readonly userService: UserService) {}
+export class AuthController {
+  constructor(private readonly authService: AuthService) {}
 
-  @MessagePattern('user.create')
-  async createUser(
+  @MessagePattern('auth.register')
+  async register(
     @Payload() dto: { username: string; email: string; password: string },
     @Ctx() context: RmqContext,
   ) {
@@ -15,7 +15,7 @@ export class UserController {
     const message = context.getMessage();
 
     try {
-      const result = await this.userService.createUser(dto);
+      const result = await this.authService.register(dto);
 
       channel.ack(message);
 
@@ -27,13 +27,13 @@ export class UserController {
       channel.ack(message);
       return {
         success: false,
-        message: err.message,
+        message: (err as Error).message,
       };
     }
   }
 
-  @MessagePattern('user.login')
-  async loginUser(
+  @MessagePattern('auth.login')
+  async login(
     @Payload() dto: { email: string; password: string },
     @Ctx() context: RmqContext,
   ) {
@@ -41,7 +41,7 @@ export class UserController {
     const message = context.getMessage();
 
     try {
-      const result = await this.userService.loginUser(dto);
+      const result = await this.authService.login(dto);
 
       channel.ack(message);
 
@@ -53,22 +53,22 @@ export class UserController {
       channel.ack(message);
       return {
         success: false,
-        message: err.message,
+        message: (err as Error).message,
       };
     }
   }
 
-  @MessagePattern('user.profile')
+  @MessagePattern('auth.profile')
   async getUserProfile(
-    @Payload() payload: { userId: number },
+    @Payload() payload: { uuid: string },
     @Ctx() context: RmqContext,
   ) {
     const channel = context.getChannelRef();
     const message = context.getMessage();
 
     try {
-      const result = await this.userService.getUserProfile(
-        Number(payload.userId),
+      const result = await this.authService.getUserProfile(
+        payload.uuid,
       );
 
       channel.ack(message);
@@ -81,7 +81,7 @@ export class UserController {
       channel.ack(message);
       return {
         success: false,
-        message: err.message,
+        message: (err as Error).message,
       };
     }
   }

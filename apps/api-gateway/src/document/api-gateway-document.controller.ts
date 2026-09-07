@@ -4,7 +4,7 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ClientProxy } from '@nestjs/microservices';
-import { AuthModule } from '../auth/auth.module';
+import { AuthModule } from '../authLogic/auth.module';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('documents')

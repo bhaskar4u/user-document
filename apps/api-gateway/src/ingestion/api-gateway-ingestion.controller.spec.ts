@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiGatewayIngestionController } from './api-gateway-ingestion.controller';
 import { ClientProxy } from '@nestjs/microservices';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { ExecutionContext } from '@nestjs/common';
+import { JwtAuthGuard } from '../authLogic/jwt-auth.guard';
 
 describe('ApiGatewayIngestionController', () => {
   let controller: ApiGatewayIngestionController;
@@ -13,6 +12,8 @@ describe('ApiGatewayIngestionController', () => {
   };
 
   beforeEach(async () => {
+    mockIngestionService.send.mockClear();
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ApiGatewayIngestionController],
       providers: [
@@ -58,17 +59,15 @@ describe('ApiGatewayIngestionController', () => {
 
       const result = await controller.getIngestionStatus(documentId);
 
-     expect(ingestionService.send).toHaveBeenCalledTimes(1);
-
-expect(ingestionService.send).toHaveBeenCalledWith(
-  'ingestion.status',
-  { documentId: 123 }
-);
-
-expect(result).toEqual({
-  documentId: 123,
-  status: 'Processing',
-});
+      expect(ingestionService.send).toHaveBeenCalledTimes(1);
+      expect(ingestionService.send).toHaveBeenCalledWith(
+        'ingestion.status',
+        { documentId: 123 }
+      );
+      expect(result).toEqual({
+        documentId: 123,
+        status: 'Processing',
+      });
 
     });
   });

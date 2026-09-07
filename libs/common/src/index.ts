@@ -11,3 +11,5 @@ export * from '../base';
 
 export * from './rpc';
 export * from './http';
+
+export * from './rateLimiter/worker-rate-limiter.service';

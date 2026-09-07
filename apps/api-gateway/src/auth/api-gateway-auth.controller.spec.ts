@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiGatwayUserController } from './api-gateway-user.controller';
+import { ApiGatwayAuthController } from './api-gateway-auth.controller';
 import { of } from 'rxjs';
 
-describe('ApiGatwayUserController', () => {
-  let controller: ApiGatwayUserController;
+describe('ApiGatwayAuthController', () => {
+  let controller: ApiGatwayAuthController;
   let mockUserService: { send: jest.Mock };
 
   beforeEach(async () => {
@@ -12,17 +12,17 @@ describe('ApiGatwayUserController', () => {
     };
 
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [ApiGatwayUserController],
+      controllers: [ApiGatwayAuthController],
       providers: [
         {
-          provide: 'user', // Ensure this matches your injection token
+          provide: 'auth', // Ensure this matches your injection token
           useValue: mockUserService,
         },
       ],
     }).compile();
 
-    controller = module.get<ApiGatwayUserController>(
-      ApiGatwayUserController,
+    controller = module.get<ApiGatwayAuthController>(
+      ApiGatwayAuthController,
     );
   });
 
@@ -41,7 +41,7 @@ describe('ApiGatwayUserController', () => {
 
     expect(result).toEqual({ success: true });
     expect(mockUserService.send).toHaveBeenCalledWith(
-      'user.create',
+      'auth.register',
       expect.any(Object),
     );
   });
@@ -56,7 +56,7 @@ describe('ApiGatwayUserController', () => {
 
     expect(result).toEqual({ token: 'abc' });
     expect(mockUserService.send).toHaveBeenCalledWith(
-      'user.login',
+      'auth.login',
       expect.any(Object),
     );
   });
@@ -70,7 +70,7 @@ describe('ApiGatwayUserController', () => {
 
     expect(result).toEqual({ id: 1 });
     expect(mockUserService.send).toHaveBeenCalledWith(
-      'user.profile',
+      'auth.profile',
       { userId: 1 },
     );
   });

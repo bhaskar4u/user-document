@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  Index,
+  BeforeInsert,
+} from 'typeorm';
+import { randomUUID } from 'crypto';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -6,23 +14,38 @@ export enum UserRole {
   VIEWER = 'viewer',
 }
 
-@Entity()
+@Entity('users')
+@Index(['email'], { unique: true })
+@Index(['uuid'], { unique: true })
 export class User {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
-  @Column({ unique: true })
-  email: string;
-
-  @Column()
-  username:string;
+  @Column({ type: 'uuid' })
+  uuid!: string;
 
   @Column()
-  password: string;
+  username!: string;
 
-  @Column({ type: 'enum', enum: UserRole, default: UserRole.VIEWER })
-  role: UserRole;
+  @Column()
+  password!: string;
+
+  @Column()
+  email!: string;
+
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.VIEWER,
+  })
+  role!: UserRole;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
+
+  @BeforeInsert()
+  setDefaults() {
+    this.uuid = randomUUID();
+    this.email = this.email.toLowerCase();
+  }
 }

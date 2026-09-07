@@ -31,8 +31,6 @@ export class RmqService {
         prefetchCount: 10, // Prevent worker flooding
         queueOptions: {
           durable: true,
-          deadLetterExchange: `${queue}.dlx`,
-          deadLetterRoutingKey: `${queue}.dlq`,
         },
       },
     };

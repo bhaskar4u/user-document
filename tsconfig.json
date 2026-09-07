@@ -18,11 +18,10 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@app/*": ["libs/*/src"],
-      "@apps/*": ["apps/*"],
-       "@test/*": ["test/*"],
-      "@app/common/*": ["libs/common/src/*"],
-      "@libs/*": ["libs/*"]
-    }
+  "@app/*": ["libs/*/src"],
+  "@apps/*": ["apps/*"],
+  "@libs/*": ["libs/*"],
+  "@test/*": ["test/*"]
+}
   }
 }

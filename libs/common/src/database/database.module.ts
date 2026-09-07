@@ -2,6 +2,8 @@ import { Module, Global } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { User } from '../../../../apps/auth/src/user.entity';
+import { Session } from '../../../../apps/auth/src/session.entity';
+
 import { Documents } from '../../../../apps/documents/src/documents.entity';
 
 // import { Document } from '../../apps/document-service/src/entities/document.entity';
@@ -19,7 +21,7 @@ import { Documents } from '../../../../apps/documents/src/documents.entity';
         username: configService.get('DB_USER'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        entities: [User,Documents],
+        entities: [User,Documents,Session],
         synchronize: true, // Disable in production
         // logging: true,
       }),

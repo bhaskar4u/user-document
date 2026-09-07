@@ -1,7 +1,6 @@
 import { Controller, Post, Body, Inject, UseGuards, Request, Get, Param } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { AuthModule } from '../auth/auth.module';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../authLogic/jwt-auth.guard';
 
 
 @Controller('ingestion')

@@ -1,4 +1,4 @@
-import { AuthModule } from "@apps/api-gateway/src/auth/auth.module";
+import { AuthModule } from "@apps/api-gateway/src/authLogic/auth.module";
 import { createTestApp } from "@test/factories/test-app.factory";
 import { mockClientProxy } from "@test/mock/rabbitmq.mock";
 import { mockRedis } from "@test/mock/redis.mock";
