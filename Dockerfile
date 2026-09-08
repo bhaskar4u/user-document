@@ -56,6 +56,10 @@ RUN pnpm install --prod --frozen-lockfile
 # Only compiled application
 COPY --from=development /usr/src/app/dist ./dist
 
+# Build selected service
+RUN pnpm run build:${SERVICE_NAME}
+
+
 EXPOSE 3000
 
 CMD ["sh", "-c", "node dist/apps/${SERVICE_NAME}/main.js"]
