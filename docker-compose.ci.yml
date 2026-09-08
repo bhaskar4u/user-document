@@ -5,7 +5,7 @@ services:
     build:
       context: .
       target: production
-    args:
+      args:
         SERVICE_NAME: auth
     env_file:
       - apps/.env
@@ -30,7 +30,7 @@ services:
     build:
       context: .
       target: production
-    args:
+      args:
         SERVICE_NAME: documents
     env_file:
       - apps/.env
@@ -46,7 +46,7 @@ services:
     build:
       context: .
       target: production
-    args:
+      args:
         SERVICE_NAME: ingestion
     env_file:
       - apps/.env
@@ -62,7 +62,7 @@ services:
     build:
       context: .
       target: production
-    args:
+      args:
         SERVICE_NAME: api-gateway
     env_file:
       - apps/.env
