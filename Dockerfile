@@ -54,7 +54,7 @@ COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
 RUN pnpm install --prod --frozen-lockfile
 
 # Only compiled application
-COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=development /usr/src/app/dist ./dist
 
 EXPOSE 3000
 
