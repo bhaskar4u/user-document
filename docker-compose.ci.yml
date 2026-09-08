@@ -4,7 +4,6 @@ services:
   auth:
     build:
       context: .
-      dockerfile: apps/auth/Dockerfile
       target: production
     env_file:
       - apps/.env
@@ -28,7 +27,6 @@ services:
   documents:
     build:
       context: .
-      dockerfile: apps/documents/Dockerfile
       target: production
     env_file:
       - apps/.env
@@ -43,7 +41,6 @@ services:
   ingestion:
     build:
       context: .
-      dockerfile: apps/ingestion/Dockerfile
       target: production
     env_file:
       - apps/.env
@@ -58,7 +55,6 @@ services:
   api-gateway:
     build:
       context: .
-      dockerfile: apps/api-gateway/Dockerfile
       target: production
     env_file:
       - apps/.env
