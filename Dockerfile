@@ -1,13 +1,12 @@
 # =====================================
 # BUILDER
 # =====================================
-FROM node:18-bullseye AS builder
+FROM node:18-bullseye AS development
 
 WORKDIR /usr/src/app
 
 ARG SERVICE_NAME
-ENV NODE_ENV=development
-ENV SERVICE_NAME=${SERVICE_NAME}
+
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
