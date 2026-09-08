@@ -1,66 +1,61 @@
 # =====================================
-# BASE IMAGE
+# BUILDER
 # =====================================
-FROM node:18-bullseye
+FROM node:18-bullseye AS builder
 
-# -------------------------------------
-# Build arguments
-# -------------------------------------
-ARG SERVICE_NAME
-ARG NODE_ENV=development
-
-ENV NODE_ENV=${NODE_ENV}
-ENV SERVICE_NAME=${SERVICE_NAME}
-ENV NODE_OPTIONS=--openssl-legacy-provider
-ENV PNPM_STORE_PATH=/pnpm-store
-
-# -------------------------------------
-# App directory
-# -------------------------------------
 WORKDIR /usr/src/app
 
-# -------------------------------------
-# Enable pnpm (locked)
-# -------------------------------------
-RUN corepack enable && corepack prepare pnpm@8.15.5 --activate
+ARG SERVICE_NAME
 
-# -------------------------------------
-# Copy workspace files (cache-friendly)
-# -------------------------------------
-COPY pnpm-workspace.yaml .
-COPY package.json pnpm-lock.yaml ./
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
 
-# -------------------------------------
-# Install dependencies
-# -------------------------------------
+RUN corepack enable \
+    && corepack prepare pnpm@8.15.5 --activate
+
+# Dependency files
+COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
+
+# Full dependencies — Nest CLI required for build
 RUN pnpm install --frozen-lockfile
 
-# -------------------------------------
-# Copy full source AFTER install
-# -------------------------------------
+# Source
 COPY apps ./apps
 COPY libs ./libs
 COPY nest-cli.json .
-COPY tsconfig*.json ./
+COPY tsconfig.json .
+COPY tsconfig.build.json .
 
-# -------------------------------------
-# Build only selected service
-# -------------------------------------
-RUN pnpm build $SERVICE_NAME
+# Build selected service
+RUN pnpm run build:${SERVICE_NAME}
 
-# -------------------------------------
-# Runtime
-# -------------------------------------
+
+# =====================================
+# PRODUCTION
+# =====================================
+FROM node:18-bookworm-slim AS production
+
+WORKDIR /usr/src/app
+
+ARG SERVICE_NAME
+ENV NODE_ENV=production
+ENV SERVICE_NAME=${SERVICE_NAME}
+
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+
+RUN corepack enable \
+    && corepack prepare pnpm@8.15.5 --activate
+
+# Only dependency manifests
+COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
+
+# Production dependencies only
+RUN pnpm install --prod --frozen-lockfile
+
+# Only compiled application
+COPY --from=builder /usr/src/app/dist ./dist
+
 EXPOSE 3000
 
-# -------------------------------------
-# Universal start command (DEV / PROD)
-# -------------------------------------
-CMD sh -c "\
-  if [ \"$NODE_ENV\" = 'development' ]; then \
-    echo '▶ Starting DEV mode for '$SERVICE_NAME; \
-    pnpm start:dev $SERVICE_NAME; \
-  else \
-    echo '▶ Starting PROD mode for '$SERVICE_NAME; \
-    node dist/apps/$SERVICE_NAME/main.js; \
-  fi"
+CMD ["sh", "-c", "node dist/apps/${SERVICE_NAME}/main.js"]
