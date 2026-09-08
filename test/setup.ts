@@ -3,7 +3,6 @@ import * as dotenv from 'dotenv';
 dotenv.config({
   path: '.env',
 });
-console.log('TEST JWT_SECRET:', process.env.JWT_SECRET ? 'LOADED' : 'MISSING');
 
 jest.setTimeout(20000);
 

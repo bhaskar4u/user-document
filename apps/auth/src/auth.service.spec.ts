@@ -1,3 +1,6 @@
+jest.mock('@libs/common/src/rateLimiter/worker-rate-limiter.service', () => ({
+  enforceRateLimit: jest.fn().mockResolvedValue(undefined),
+}));
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { Repository } from 'typeorm';
