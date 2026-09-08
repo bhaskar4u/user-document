@@ -6,7 +6,7 @@ services:
       context: .
       args:
         SERVICE_NAME: auth
-    command: npm run start:dev auth
+    command: pnpm run start:dev auth
     env_file:
       - apps/.env
     volumes:
@@ -34,7 +34,7 @@ services:
       context: .
       args:
         SERVICE_NAME: documents
-    command: npm run start:dev documents
+    command: pnpm run start:dev documents
     env_file:
       - apps/.env
     volumes:
@@ -55,7 +55,7 @@ services:
       context: .
       args:
         SERVICE_NAME: ingestion
-    command: npm run start:dev ingestion
+    command: pnpm run start:dev ingestion
     env_file:
       - apps/.env
     volumes:
@@ -76,7 +76,7 @@ services:
       context: .
       args:
         SERVICE_NAME: api-gateway
-    command: npm run start:dev api-gateway
+    command: pnpm run start:dev api-gateway
     env_file:
       - apps/.env
     volumes:
